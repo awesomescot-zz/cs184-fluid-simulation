@@ -1,0 +1,54 @@
+#!gmake 
+
+#-----------------------------------------
+#Basic Stuff -----------------------------
+CC          = g++ 
+cc          = gcc
+
+#-----------------------------------------
+#Optimization ----------------------------
+OPT   = -fast
+
+#-----------------------------------------
+# X       --------------------------------
+FRAMEWORK = -framework GLUT
+FRAMEWORK += -framework OpenGL
+MAC_INC  =   -L"/System/Library/Frameworks/OpenGL.framework/Libraries"
+MAC_LIB  =   -lGL -lGLU -lm -lstdc++
+
+#-----------------------------------------
+#-----------------------------------------
+
+TARGETS = tesel
+
+OBJECTS = tesel.o
+
+#-----------------------------------------
+
+
+CCOPTS = $(OPT) $(MAC_INC) -DOSX
+LDOPTS = $(OPT) $(MAC_INC) $(MAC_LIB) -DOSX
+
+#-----------------------------------------
+#-----------------------------------------
+
+default: $(TARGETS)
+
+clean:
+	/bin/rm -f *.o $(TARGETS)
+
+#-----------------------------------------
+#-----------------------------------------
+
+tesel: tesel.o parser.o
+	$(CC) tesel.o parser.o $(FRAMEWORK) $(LDOPTS) -o tesel 
+
+tesel.o: tesel.cpp
+	$(CC) tesel.cpp -c $(CCOPTS)
+	
+parser.o: parser.cpp
+	$(CC) parser.cpp -c $(CCOPTS)
+
+
+#export LD_LIBRARY_PATH="/usr/sww/pkg/Mesa/lib:/usr/lib:/usr/sww/lib"
+
