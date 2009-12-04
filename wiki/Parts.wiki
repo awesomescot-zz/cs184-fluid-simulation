@@ -1,11 +1,11 @@
 #summary Parts of the project Look here to work on something
 
 = Parts of Project =
-
-   * Grid(Data structure)  (Scot)
+   * windows makefile (divia)
+   * Grid(Data structure) first  (Scot) 
    * Particles??
    * Figure out equations(get them to work within the grid),
    * User interface( rendering, and controls), (Norman)
-      * redering
+      * rendering  (first)  (andrew)
       * image output
       * controls UI
