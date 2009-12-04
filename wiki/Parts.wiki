@@ -5,8 +5,7 @@
    * Grid(Data structure)  (Scot)
    * Particles??
    * Figure out equations(get them to work within the grid),
-   * User interface( rendering, and controls),
+   * User interface( rendering, and controls), (Norman)
       * redering
       * image output
       * controls UI
-
