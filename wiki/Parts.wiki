@@ -1,0 +1,14 @@
+#summary One-sentence summary of this page.
+
+= Parts of Project =
+
+   * Grid(Data structure)
+   * Particles??
+   * Figure out equations(get them to work within the grid),
+   * User interface( rendering, and controls),
+      * redering
+      * image output
+      * controls UI
+
+
+
