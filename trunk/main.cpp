@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "algebra3.h"
+//#include "grid.h"
 
 #ifdef _WIN32
 #	include <windows.h>
@@ -28,12 +29,17 @@ class Viewport;
 class Viewport {
 private:
 	vector<vec3> particles;
+	float t;
 
 public:
 	int w, h;
 
 	void addParticle(vec3 loc) {
 		particles.push_back(loc);
+	}
+
+	void setDeltaT(float s) {
+		t = s;
 	}
 
 	vec3 getLoc(int i) {
@@ -47,12 +53,27 @@ public:
 	void sort() {
 		for (int i = 0; i < (int)(particles.size() - 1); i++) {
 			for (int j = 0; j < (int)(particles.size() - 1); j++) {
-				if (particles[i][2] < particles[i+1][2]) {
-					vec3 temp = particles[i];
-					particles[i] = particles[i+1];
-					particles[i+1] = temp;
+				if (particles[j][2] < particles[j+1][2]) {
+					vec3 temp = particles[j];
+					particles[j] = particles[j+1];
+					particles[j+1] = temp;
 				}
 			}
+		}
+	}
+
+	void update() {
+
+		vec3 velocity = vec3(-1, -0.3, 1);					// replace this with vec3 velocity = myGrid.getVelocity();
+
+		for (int i = 0; i < (int)particles.size(); i++) {
+			particles[i] = particles[i] + velocity * t;
+		}
+	}
+
+	void particlesLocs() {
+		for (int i = 0; i < (int)particles.size(); i++) {
+			cout << i << ": " << particles[i] << endl;
 		}
 	}
 };
@@ -74,6 +95,10 @@ void myReshape(int w, int h) {
 
 void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	float s = 0.1;
+	s = s / 3;
+	viewport.setDeltaT(s);
 
 	// 5 random particles
 	viewport.addParticle(vec3(1, 1, 1));
@@ -136,8 +161,10 @@ void myDisplay() {
 	glLoadIdentity();
 	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
 
-	// before drawing, sort farthest to closest
+	// before drawing, update and sort farthest to closest
+	viewport.update();
 	viewport.sort();
+	//viewport.particlesLocs();
 
 	// start drawing here
 	glColor3f(1.0f, 1.0f, 1.0f);
