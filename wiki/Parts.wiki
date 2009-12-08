@@ -3,7 +3,7 @@
 = Parts of Project =
    * windows makefile (divia)
    * Grid(Data structure) first  (Scot) 
-   * Particles??
+   * Particles (list of locations)
    * Figure out equations(get them to work within the grid),
    * User interface( rendering, and controls), (Norman)
       * rendering  (first)  (andrew)
