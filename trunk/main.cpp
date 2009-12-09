@@ -23,9 +23,19 @@
 #endif
 
 float deltaT = 1;
+
+// temporary velocity updates for keyboard interaction
 float vx = 0;
 float vy = 0;
 float vz = 0;
+
+// temporary grid information
+int gx = -1;
+int gy = 1;
+int gz = 1;
+int xSplit = 5;
+int ySplit = 5;
+int zSplit = 5;
 
 using namespace std;
 
@@ -253,22 +263,56 @@ void myDisplay() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_LIGHTING);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	//gluLookAt(gx, gy, -2, 0, 0, gz, 0, 1, 0);
 	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
 
 	// before drawing, update new particle locations
 	viewport.update();
-
+	
 	// start drawing here
 	glColor3f(1.0f, 1.0f, 1.0f);
 
-	for (int i = 0; i < viewport.numParticles(); i++){
+	//draw grid
+	//z-axis aligned
+	glBegin(GL_LINES);
+	float xs = (float)gx/xSplit;
+	float ys = (float)gy/ySplit;
+	float zs = (float)gz/zSplit;
+	cout << xs << endl;
+	for (int i = 0; i < xSplit + 1; i++) {
+		for (int j = 0; j < ySplit + 1; j++) {
+			glVertex3f(xs*i, ys*j, 0);
+			glVertex3f(xs*i, ys*j, gz);
+		}
+	}
+	//y-axis aligned
+	for (int i = 0; i < xSplit + 1; i++) {
+		for (int k = 0; k < zSplit + 1; k++) {
+			glVertex3f(xs*i, 0, zs*k);
+			glVertex3f(xs*i, gy, zs*k);
+		}
+	}
+	//z-axis aligned
+	for (int j = 0; j < ySplit + 1; j++) {
+		for (int k = 0; k < zSplit + 1; k++) {
+			glVertex3f(0, ys*j, zs*k);
+			glVertex3f(gx, ys*j, zs*k);
+		}
+	}
+	glEnd();
 
+	glEnable(GL_LIGHTING);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// draw particles
+	for (int i = 0; i < viewport.numParticles(); i++){
+		
 		vec3 part = viewport.getLoc(i);
+
 		glPushMatrix();
 			glTranslatef(part[0], part[1], part[2]);
 			glutSolidSphere(0.25, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
