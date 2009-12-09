@@ -23,9 +23,11 @@
 #endif
 
 float deltaT = 1;
+float vx = 0;
+float vy = 0;
+float vz = 0;
 
 using namespace std;
-float t;
 
 class Viewport;
 
@@ -66,7 +68,7 @@ public:
 		vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
 
 		for (int i = 0; i < (int)particles.size(); i++) {
-			particles[i] = particles[i] + velocity * deltaT;
+			particles[i] = particles[i] + (velocity + vec3(vx, vy, vz)) * deltaT;
 		}
 	}
 
@@ -149,6 +151,41 @@ void initLights() {
 	glEnable(GL_NORMALIZE);
 }
 
+void processNormalKeys(unsigned char key, int x, int y) {
+	switch(key) {
+		case 27 :
+			exit(0);
+		case 'r' :
+			initScene();
+			break;
+	}
+}
+
+void processInputKeys(int key, int x, int y) {
+
+	int mod = glutGetModifiers();
+	switch(key) {
+		case GLUT_KEY_LEFT :
+			vx = vx + (float)1/30;
+			break;
+		case GLUT_KEY_RIGHT :
+			vx = vx - (float)1/30;
+			break;
+		case GLUT_KEY_UP :
+			if (mod == GLUT_ACTIVE_ALT)
+				vz = vz - (float)1/30;
+			else
+				vy = vy + (float)1/30;
+			break;
+		case GLUT_KEY_DOWN :
+			if (mod == GLUT_ACTIVE_ALT)
+				vz = vz + (float)1/30;
+			else
+				vy = vy - (float)1/30;
+			break;
+	}
+}
+
 void myDisplay() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -205,6 +242,10 @@ int main(int argc, char *argv[]) {
 	//initialize scene
 	initScene();
 	initLights();
+
+	//keyboard interaction
+	glutKeyboardFunc(processNormalKeys);
+	glutSpecialFunc(processInputKeys);
 
 	glutDisplayFunc(myDisplay);
 	glutReshapeFunc(myReshape);
