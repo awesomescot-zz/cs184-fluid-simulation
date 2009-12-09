@@ -1,7 +1,7 @@
 #summary Parts of the project Look here to work on something
 
 = Parts of Project =
-   * windows makefile (divia)
+   * windows makefile (Divya)
    * Grid(Data structure) first  (Scot) 
    * Particles (list of locations)
    * Figure out equations(get them to work within the grid),
