@@ -54,7 +54,7 @@ grid::grid(float X, float Y, float Z, int xs, int ys, int zs){
 	for(int i=0; i<xSplit; i++){
 		for(int j=0; j<ySplit; j++){
 			for(int k=0; k<zSplit; k++){
-				cubeGrid[i][j][k] = new cube();
+				cubeGrid[i][j][k] = cube();
 				cubeGrid[i][j][k].u = 0;
 				cubeGrid[i][j][k].v = 0;
 				cubeGrid[i][j][k].w = 0;
