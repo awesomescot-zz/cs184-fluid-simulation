@@ -22,6 +22,8 @@
 	#include <GL/glu.h>
 #endif
 
+#define deltaT = 1
+
 using namespace std;
 
 class Viewport;
