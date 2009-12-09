@@ -22,26 +22,22 @@
 	#include <GL/glu.h>
 #endif
 
-#define deltaT = 1
+float deltaT = 1;
 
 using namespace std;
+float t;
 
 class Viewport;
 
 class Viewport {
 private:
 	vector<vec3> particles;
-	float t;
 
 public:
 	int w, h;
 
 	void addParticle(vec3 loc) {
 		particles.push_back(loc);
-	}
-
-	void setDeltaT(float s) {
-		t = s;
 	}
 
 	vec3 getLoc(int i) {
@@ -66,10 +62,11 @@ public:
 
 	void update() {
 
-		vec3 velocity = vec3(-1, -0.3, 1);					// replace this with vec3 velocity = myGrid.getVelocity();
+		// replace this with vec3 velocity = myGrid.getVelocity();
+		vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
 
 		for (int i = 0; i < (int)particles.size(); i++) {
-			particles[i] = particles[i] + velocity * t;
+			particles[i] = particles[i] + velocity * deltaT;
 		}
 	}
 
@@ -97,10 +94,6 @@ void myReshape(int w, int h) {
 
 void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	float s = 0.1;
-	s = s / 3;
-	viewport.setDeltaT(s);
 
 	glEnable(GL_DEPTH_TEST);
 
