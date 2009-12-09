@@ -79,6 +79,69 @@ public:
 	}
 };
 
+void advection() {
+	/*
+	 * velocity advection(){
+	 *   for every velocity
+	 *     calculate xyz vector for that side
+	 *     move negative xyz*delta T in that direction
+	 *     calculate the velocity at that spot
+	 *     copy that velocity to the new grid at our original location(a sides velocity vector)
+	 *
+	 * getVelosity on one of the face centers
+	 * go backwards along velocity vector by delta T time
+	 * getVelosity at this previous point
+	 * take the appropriate part of the previous vector, put into a blank copy of the grid
+	 * repeat for every center of every face of every cube in the grid
+	 * done
+	 * no particular timestep length or speed of velocity yet
+	 */
+	// grd = our global grid
+	grid newGrid = new grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
+	vec3 vel, point;
+
+	// xi, yi, zi = indices for the cubes in the grid
+	for (float xi = 0; xi < grd.x; xi++) { // < or <= ? depends on how to handle border cases
+		for (float yi = 0; yi < grd.y; yi++) {
+			for (float zi = 0; zi < grd.z; zi++) {
+				// copy old grid info into new grid while we're at it
+				newGrid[xi][yi][zi].temp = grd[xi][yi][zi].temp;
+				newGrid[xi][yi][zi].comp = grd[xi][yi][zi].comp;
+
+				// iterate through the x, y, and z faces (other three faces handled by other cubes)
+				// take point on face, get velocity, move back by (vel * deltaT), get new velocity, update on new grid
+				// TODO: what happens if we end up outside of the grid?
+
+				// x/u face
+				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
+				point = vec3(xi * grd.xCubeSize, yi * grd.yCubeSize + (grd.yCubesize)/2, zi * grd.zCubeSize + (grd.zCubeSize)/2);
+				vel = getVelosity(point);
+				point = point - (vel * deltaT);
+				vel = getVelosity(point);
+				newGrid[xi][yi][zi].u = vel[0];
+
+				// y/v face
+				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
+				point = vec3(xi * grd.xCubeSize + (grd.xCubeSize)/2, yi * grd.yCubeSize, zi * grd.zCubeSize + (grd.zCubeSize)/2);
+				vel = getVelosity(point);
+				point = point - (vel * deltaT);
+				vel = getVelosity(point);
+				newGrid[xi][yi][zi].v = vel[1];
+
+				// z/w face
+				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
+				point = vec3(xi * grd.xCubeSize + (grd.xCubeSize)/2, yi * grd.yCubeSize + (grd.yCubesize)/2, zi * grd.zCubeSize);
+				vel = getVelosity(point);
+				point = point - (vel * deltaT);
+				vel = getVelosity(point);
+				newGrid[xi][yi][zi].w = vel[2];
+			}
+		}
+	}
+
+	grd = newGrid;
+}
+
 Viewport viewport;
 
 void myReshape(int w, int h) {
