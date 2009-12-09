@@ -89,7 +89,7 @@ void myReshape(int w, int h) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	//glOrtho(-1, 1, -1, 1, 1, -1);
+	//glOrtho(-2, 2, -2, 2, 1, 100);
 	gluPerspective(45, ratio, 1, 100);
 }
 
@@ -100,12 +100,15 @@ void initScene() {
 	s = s / 3;
 	viewport.setDeltaT(s);
 
+	glEnable(GL_DEPTH_TEST);
+
 	// 5 random particles
 	viewport.addParticle(vec3(1, 1, 1));
 	viewport.addParticle(vec3(0.0, 0.0, 5));
 	viewport.addParticle(vec3(0.7, 1, 4));
 	viewport.addParticle(vec3(0.5, -0.7, 4));
 	viewport.addParticle(vec3(-0.5, -0.3, 9));
+
 	myReshape(viewport.w, viewport.h);
 }
 
@@ -154,6 +157,7 @@ void initLights() {
 void myDisplay() {
 
 	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -161,23 +165,21 @@ void myDisplay() {
 	glLoadIdentity();
 	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
 
-	// before drawing, update and sort farthest to closest
+	// before drawing, update new particle locations
 	viewport.update();
-	viewport.sort();
-	//viewport.particlesLocs();
 
 	// start drawing here
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	for (int i = 0; i < viewport.numParticles(); i++){
+
 		vec3 part = viewport.getLoc(i);
 		glPushMatrix();
 			glTranslatef(part[0], part[1], part[2]);
-			glutSolidSphere(0.1, 50, 50);
+			glutSolidSphere(0.25, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
 		glPopMatrix();
 	}
 
-	glFlush();
 	glutSwapBuffers();
 }
 
