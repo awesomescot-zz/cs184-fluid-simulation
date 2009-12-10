@@ -4,7 +4,7 @@
 
 /*
 struct cube{
-	float u, v, w, temp, comp;
+	float u, v, w, temp;
 	vec3 x, y, z, start;
 };
 
@@ -59,7 +59,6 @@ grid::grid(float X, float Y, float Z, int xs, int ys, int zs){
 				cubeGrid[i][j][k].v = 0;
 				cubeGrid[i][j][k].w = 0;
 				cubeGrid[i][j][k].temp = 0;
-				cubeGrid[i][j][k].comp = 1;
 			}
 		}
 	}
@@ -81,21 +80,158 @@ vec3 grid::getVelosity(vec3 location){
 	int gridSpoty = location[1] / yCubeSize;
 	int gridSpotz = location[2] / zCubeSize;
 
+	//W
+	float zdistBack = location[2] - (gridSpotz*zCubeSize);
+	float zdistForward = (gridSpotz+1)*zCubeSize - location[2];
 	if( (gridSpotx*xCubeSize) + .5*xCubeSize < location[0]){//if the point is over half way through the cube in the x direction
 		float xdistBack = location[0] - (gridSpotx*xCubeSize) + .5*xCubeSize;
 		float xdistForward = (gridSpotx+1)*xCubeSize + .5*xCubeSize - location[0];
-		float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
-		float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
-		float rightSideAverage = (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w + (xdistForward/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz].w;
-		float leftSideAverage = (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].w + (xdistForward/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz+1].w;
-		float wfullAverage = (zdistBack/zCubeSize)*leftSideAverage + (zdistForward/zCubeSize)*rightSideAverage;
+		float firstCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz].w;
+		float firstFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz+1].w;
+		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
+			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
+			float secondCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz].w;
+			float secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz+1].w;
+			float fullCloseSideAverage = (ydistForward/yCubeSize)*firstCloseSideAverage + (ydistBack/yCubeSize)*secondCloseSideAverage;
+			float fullFarSideAverage = (ydistForward/yCubeSize)*firstFarSideAverage + (ydistBack/yCubeSize)*secondFarSideAverage;
+		} else{//calculate for y-1
+			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
+			float secondCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz].w;
+			float secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz+1].w;
+			float fullCloseSideAverage = (ydistBack/yCubeSize)*firstCloseSideAverage + (ydistForward/yCubeSize)*secondCloseSideAverage;
+			float fullFarSideAverage = (ydistBack/yCubeSize)*firstFarSideAverage + (ydistForward/yCubeSize)*secondFarSideAverage;
+		}
+		float wfullAverage = (zdistBack/zCubeSize)*fullFarSideAverage + (zdistForward/zCubeSize)*fullCloseSideAverage;
 	}else{
 		float xdistBack = location[0] - (gridSpotx-1)*xCubeSize + .5*xCubeSize;
 		float xdistForward = (gridSpotx)*xCubeSize + .5*xCubeSize - location[0];
+		float rightSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w;
+		float leftSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].w;
+		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
+			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
+			float secondCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty+1][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].w;
+			float secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty+1][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz+1].w;
+			float fullCloseSideAverage = (ydistForward/yCubeSize)*firstCloseSideAverage + (ydistBack/yCubeSize)*secondCloseSideAverage;
+			float fullFarSideAverage = (ydistForward/yCubeSize)*firstFarSideAverage + (ydistBack/yCubeSize)*secondFarSideAverage;
+		} else{//calculate for y-1
+			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
+			float secondCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty-1][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz].w;
+			float secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty-1][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz+1].w;
+			float fullCloseSideAverage = (ydistBack/yCubeSize)*firstCloseSideAverage + (ydistForward/yCubeSize)*secondCloseSideAverage;
+			float fullFarSideAverage = (ydistBack/yCubeSize)*firstFarSideAverage + (ydistForward/yCubeSize)*secondFarSideAverage;
+		}
+		float wfullAverage = (zdistBack/zCubeSize)*fullFarSideAverage + (zdistForward/zCubeSize)*fullCloseSideAverage;
+
+	}
+	/*
+	 *      _______
+	 *     /|     /|
+	 *    / |    / |
+	 *   /  |   /  |
+	 *  /   |  /   |
+	 *  -------____|
+	 *  |   / |   /
+	 *  |  /  |  /
+	 *  | /   | /
+	 *  |/    |/
+	 *  -------
+	 */
+	//U
+	float xdistBack = location[0] - (gridSpotx*xCubeSize);
+	float xdistForward = (gridSpotx+1)*xCubeSize - location[0];
+	if( (gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//if the point is over half way through the cube in the z direction
 		float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
 		float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
-		float rightSideAverage = (xdistBack/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz].w + (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w;
-		float leftSideAverage = (xdistBack/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz+1].w + (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].w;
-		float wfullAverage = (zdistBack/zCubeSize)*leftSideAverage + (zdistForward/zCubeSize)*rightSideAverage;
+		float firstLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].u + (zdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].u;
+		float firstRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz+1].u;
+		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
+			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
+			float secondLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz+1].u;
+			float secondRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz+1].u;
+			float fullLeftSideAverage = (ydistForward/yCubeSize)*firstLeftSideAverage + (ydistBack/yCubeSize)*secondLeftSideAverage;
+			float fullRightSideAverage = (ydistForward/yCubeSize)*firstRightSideAverage + (ydistBack/yCubeSize)*secondRightSideAverage;
+		} else{//calculate for y-1
+			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
+			float secondLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz+1].u;
+			float secondRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz+1].u;
+			float fullLeftSideAverage = (ydistBack/yCubeSize)*firstLeftSideAverage + (ydistForward/yCubeSize)*secondLeftSideAverage;
+			float fullRightSideAverage = (ydistBack/yCubeSize)*firstRightSideAverage + (ydistForward/yCubeSize)*secondRightSideAverage;
+		}
+		float ufullAverage = (xdistBack/xCubeSize)*fullRightSideAverage + (xdistForward/xCubeSize)*fullLeftSideAverage;
+	}else{
+		float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+		float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
+		float firstLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz-1].u + (zdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].u;
+		float firstRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz-1].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz].u;
+		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
+			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
+			float secondLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz-1].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].u;
+			float secondRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz-1].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz].u;
+			float fullLeftSideAverage = (ydistForward/yCubeSize)*firstLeftSideAverage + (ydistBack/yCubeSize)*secondLeftSideAverage;
+			float fullRightSideAverage = (ydistForward/yCubeSize)*firstRightSideAverage + (ydistBack/yCubeSize)*secondRightSideAverage;
+		} else{//calculate for y-1
+			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
+			float secondLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz-1].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz].u;
+			float secondRightSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz-1].u + (zdistBack/zCubeSize)*cubeGrid[gridSpotx+1][gridSpoty-1][gridSpotz].u;
+			float fullLeftSideAverage = (ydistBack/yCubeSize)*firstLeftSideAverage + (ydistForward/yCubeSize)*secondLeftSideAverage;
+			float fullRightSideAverage = (ydistBack/yCubeSize)*firstRightSideAverage + (ydistForward/yCubeSize)*secondRightSideAverage;
+		}
+		float ufullAverage = (xdistBack/xCubeSize)*fullRightSideAverage + (xdistForward/xCubeSize)*fullLeftSideAverage;
 	}
+
+	//V
+	float ydistBack = location[1] - (gridSpoty*yCubeSize);
+	float ydistForward = (gridSpoty+1)*yCubeSize - location[1];
+	if( (gridSpotx*xCubeSize) + .5*xCubeSize < location[0]){//if the point is over half way through the cube in the x direction
+		float xdistBack = location[0] - (gridSpotx*xCubeSize) + .5*xCubeSize;
+		float xdistForward = (gridSpotx+1)*xCubeSize + .5*xCubeSize - location[0];
+		float firstBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz].v;
+		float firstTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz].v;
+		if((gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//over z half way point calculate for z+1
+			float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
+			float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
+			float secondBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz+1].v;
+			float secondTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz+1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz+1].v;
+			float fullBottomSideAverage = (zdistForward/zCubeSize)*firstBottomSideAverage + (zdistBack/zCubeSize)*secondBottomSideAverage;
+			float fullTopSideAverage = (zdistForward/zCubeSize)*firstTopSideAverage + (zdistBack/zCubeSize)*secondTopSideAverage;
+		} else{//calculate for y-1
+			float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+			float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
+			float secondBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz-1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz-1].v;
+			float secondTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz-1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty+1][gridSpotz-1].v;
+			float fullBottomSideAverage = (zdistBack/zCubeSize)*firstBottomSideAverage + (zdistForward/zCubeSize)*secondBottomSideAverage;
+			float fullTopSideAverage = (zdistBack/zCubeSize)*firstTopSideAverage + (zdistForward/zCubeSize)*secondTopSideAverage;
+		}
+		float vfullAverage = (ydistBack/yCubeSize)*fullTopSideAverage + (ydistForward/yCubeSize)*fullBottomSideAverage;
+	}else{
+		float xdistBack = location[0] - (gridSpotx-1)*xCubeSize + .5*xCubeSize;
+		float xdistForward = (gridSpotx)*xCubeSize + .5*xCubeSize - location[0];
+		float firstBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].v;
+		float firstTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty+1][gridSpotz].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz].v;
+		if((gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//over z half way point calculate for z+1
+			float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
+			float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
+			float secondBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz+1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].v;
+			float secondTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty+1][gridSpotz+1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz+1].v;
+			float fullBottomSideAverage = (zdistForward/zCubeSize)*firstBottomSideAverage + (zdistBack/zCubeSize)*secondBottomSideAverage;
+			float fullTopSideAverage = (zdistForward/zCubeSize)*firstTopSideAverage + (zdistBack/zCubeSize)*secondTopSideAverage;
+		} else{//calculate for y-1
+			float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+			float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
+			float secondBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz-1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz-1].v;
+			float secondTopSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty+1][gridSpotz-1].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty+1][gridSpotz-1].v;
+			float fullBottomSideAverage = (zdistBack/zCubeSize)*firstBottomSideAverage + (zdistForward/zCubeSize)*secondBottomSideAverage;
+			float fullTopSideAverage = (zdistBack/zCubeSize)*firstTopSideAverage + (zdistForward/zCubeSize)*secondTopSideAverage;
+		}
+		float vfullAverage = (ydistBack/yCubeSize)*fullTopSideAverage + (ydistForward/yCubeSize)*fullBottomSideAverage;
+	}
+	return vec3(ufullAverage, vfullAverage, wfullAverage);
 }
