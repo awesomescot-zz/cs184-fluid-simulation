@@ -7,7 +7,7 @@
 using namespace std;
 
 struct cube{
-	float u, v, w, temp, comp;
+	float u, v, w, temp;
 };
 
 class grid {
