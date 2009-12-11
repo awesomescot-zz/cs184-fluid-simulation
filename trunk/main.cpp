@@ -33,6 +33,8 @@ using namespace std;
 
 class Viewport;
 
+grid grd;
+
 class Viewport {
 private:
 	vector<vec3> particles;
@@ -66,10 +68,10 @@ public:
 
 	void update() {
 
-		// replace this with vec3 velocity = myGrid.getVelocity();
-		vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
-
 		for (int i = 0; i < (int)particles.size(); i++) {
+			//vec3 particleLoc = particles[i];
+			//vec3 velocity = grd.getVelosity(particleLoc);
+			vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
 			particles[i] = particles[i] + (velocity + vec3(vx, vy, vz)) * deltaT;
 		}
 	}
@@ -82,9 +84,8 @@ public:
 };
 
 Viewport viewport;
-grid grd;
-/*
-void advection() {
+
+//void advection() {
 	/*
 	 * velocity advection(){
 	 *   for every velocity
@@ -145,8 +146,8 @@ void advection() {
 	}
 
 	grd = newGrid;
-}
-*/
+}*/
+
 void myReshape(int w, int h) {
 	viewport.w = w;
 	viewport.h = h;
@@ -159,15 +160,7 @@ void myReshape(int w, int h) {
 	//glOrtho(-2, 2, -2, 2, 1, 100);
 	gluPerspective(45, ratio, 1, 100);
 }
-/*
-//temporary grid data
-	int gx = -1;
-	int gy = 1;
-	int gz = 1;
-	int xSplit = 5;
-	int ySplit = 5;
-	int zSplit = 5;
-*/
+
 void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -281,34 +274,6 @@ void myDisplay() {
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	//draw grid
-/*	//z-axis aligned
-	glBegin(GL_LINES);
-	float xs = (float)gx/xSplit;
-	float ys = (float)gy/ySplit;
-	float zs = (float)gz/zSplit;
-	
-	for (int i = 0; i < xSplit + 1; i++) {
-		for (int j = 0; j < ySplit + 1; j++) {
-			glVertex3f(xs*i, ys*j, 0);
-			glVertex3f(xs*i, ys*j, gz);
-		}
-	}
-	//y-axis aligned
-	for (int i = 0; i < xSplit + 1; i++) {
-		for (int k = 0; k < zSplit + 1; k++) {
-			glVertex3f(xs*i, 0, zs*k);
-			glVertex3f(xs*i, gy, zs*k);
-		}
-	}
-	//x-axis aligned
-	for (int j = 0; j < ySplit + 1; j++) {
-		for (int k = 0; k < zSplit + 1; k++) {
-			glVertex3f(0, ys*j, zs*k);
-			glVertex3f(gx, ys*j, zs*k);
-		}
-	}
-	glEnd();*/
-
 	//z-axis aligned
 	glBegin(GL_LINES);
 	float xs = (float)grd.x/grd.xSplit;
