@@ -51,8 +51,11 @@ grid::grid(float X, float Y, float Z, int xs, int ys, int zs){
 	xCubeSize = x / xSplit;
 	yCubeSize = y / ySplit;
 	zCubeSize = z / zSplit;
+	cubeGrid = new cube** [xSplit];
 	for(int i=0; i<xSplit; i++){
+		cubeGrid[i] = new cube* [ySplit];
 		for(int j=0; j<ySplit; j++){
+			cubeGrid[i][j] = new cube[zSplit];
 			for(int k=0; k<zSplit; k++){
 				cubeGrid[i][j][k] = cube();
 				cubeGrid[i][j][k].u = 0;
