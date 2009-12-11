@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "algebra3.h"
-//#include "grid.h"
+#include "grid.h"
 
 #ifdef _WIN32
 #	include <windows.h>
@@ -88,7 +88,7 @@ public:
 		}
 	}
 };
-
+/*
 void advection() {
 	/*
 	 * velocity advection(){
@@ -105,7 +105,7 @@ void advection() {
 	 * repeat for every center of every face of every cube in the grid
 	 * done
 	 * no particular timestep length or speed of velocity yet
-	 */
+	 *
 	// grd = our global grid
 	grid newGrid = new grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
 	vec3 vel, point;
@@ -151,7 +151,7 @@ void advection() {
 
 	grd = newGrid;
 }
-
+*/
 Viewport viewport;
 
 void myReshape(int w, int h) {
@@ -264,7 +264,7 @@ void myDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//gluLookAt(gx, gy, -2, 0, 0, gz, 0, 1, 0);
@@ -272,7 +272,7 @@ void myDisplay() {
 
 	// before drawing, update new particle locations
 	viewport.update();
-	
+
 	// start drawing here
 	glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -310,7 +310,7 @@ void myDisplay() {
 
 	// draw particles
 	for (int i = 0; i < viewport.numParticles(); i++){
-		
+
 		vec3 part = viewport.getLoc(i);
 
 		glPushMatrix();

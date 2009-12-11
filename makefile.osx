@@ -19,9 +19,9 @@ MAC_LIB  =   -lGL -lGLU -lm -lstdc++
 #-----------------------------------------
 #-----------------------------------------
 
-TARGETS = tesel
+TARGETS = main
 
-OBJECTS = tesel.o
+OBJECTS = main.o
 
 #-----------------------------------------
 
@@ -40,14 +40,14 @@ clean:
 #-----------------------------------------
 #-----------------------------------------
 
-tesel: tesel.o parser.o
-	$(CC) tesel.o parser.o $(FRAMEWORK) $(LDOPTS) -o tesel 
+main: main.o grid.o
+	$(CC) main.o grid.o $(FRAMEWORK) $(LDOPTS) -o main
 
-tesel.o: tesel.cpp
-	$(CC) tesel.cpp -c $(CCOPTS)
+grid.o: grid.cpp
+	$(CC) grid.cpp -c $(CCOPTS)
 	
-parser.o: parser.cpp
-	$(CC) parser.cpp -c $(CCOPTS)
+main.o: main.cpp
+	$(CC) main.cpp -c $(CCOPTS)
 
 
 #export LD_LIBRARY_PATH="/usr/sww/pkg/Mesa/lib:/usr/lib:/usr/sww/lib"
