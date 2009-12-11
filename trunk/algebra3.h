@@ -56,7 +56,7 @@ enum {KA, KD, KS, ES};		    // phong coefficients
 //
 //	PI
 //
-const double M_PI = (double) 3.14159265358979323846;		// per CRC handbook, 14th. ed.
+//const double M_PI = (double) 3.14159265358979323846;		// per CRC handbook, 14th. ed.
 //const double M_PI_2 = (M_PI/2.0);				// PI/2
 //const double M2_PI = (M_PI*2.0);				// PI*2
 
