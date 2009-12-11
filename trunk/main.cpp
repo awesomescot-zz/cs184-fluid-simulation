@@ -29,14 +29,6 @@ float vx = 0;
 float vy = 0;
 float vz = 0;
 
-// temporary grid information
-int gx = -1;
-int gy = 1;
-int gz = 1;
-int xSplit = 5;
-int ySplit = 5;
-int zSplit = 5;
-
 using namespace std;
 
 class Viewport;
@@ -88,6 +80,9 @@ public:
 		}
 	}
 };
+
+Viewport viewport;
+grid grd;
 /*
 void advection() {
 	/*
@@ -107,7 +102,7 @@ void advection() {
 	 * no particular timestep length or speed of velocity yet
 	 *
 	// grd = our global grid
-	grid newGrid = new grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
+	grid newGrid = grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
 	vec3 vel, point;
 
 	// xi, yi, zi = indices for the cubes in the grid
@@ -152,8 +147,6 @@ void advection() {
 	grd = newGrid;
 }
 */
-Viewport viewport;
-
 void myReshape(int w, int h) {
 	viewport.w = w;
 	viewport.h = h;
@@ -171,6 +164,9 @@ void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
+
+	// create grid
+	grd = grid(-1, 1, 1, 5, 5, 5);
 
 	// 5 random particles
 	viewport.addParticle(vec3(1, 1, 1));
@@ -279,28 +275,28 @@ void myDisplay() {
 	//draw grid
 	//z-axis aligned
 	glBegin(GL_LINES);
-	float xs = (float)gx/xSplit;
-	float ys = (float)gy/ySplit;
-	float zs = (float)gz/zSplit;
-	cout << xs << endl;
-	for (int i = 0; i < xSplit + 1; i++) {
-		for (int j = 0; j < ySplit + 1; j++) {
+	float xs = (float)grd.x/grd.xSplit;
+	float ys = (float)grd.y/grd.ySplit;
+	float zs = (float)grd.z/grd.zSplit;
+	
+	for (int i = 0; i < grd.xSplit + 1; i++) {
+		for (int j = 0; j < grd.ySplit + 1; j++) {
 			glVertex3f(xs*i, ys*j, 0);
-			glVertex3f(xs*i, ys*j, gz);
+			glVertex3f(xs*i, ys*j, grd.z);
 		}
 	}
 	//y-axis aligned
-	for (int i = 0; i < xSplit + 1; i++) {
-		for (int k = 0; k < zSplit + 1; k++) {
+	for (int i = 0; i < grd.xSplit + 1; i++) {
+		for (int k = 0; k < grd.zSplit + 1; k++) {
 			glVertex3f(xs*i, 0, zs*k);
-			glVertex3f(xs*i, gy, zs*k);
+			glVertex3f(xs*i, grd.y, zs*k);
 		}
 	}
 	//z-axis aligned
-	for (int j = 0; j < ySplit + 1; j++) {
-		for (int k = 0; k < zSplit + 1; k++) {
+	for (int j = 0; j < grd.ySplit + 1; j++) {
+		for (int k = 0; k < grd.zSplit + 1; k++) {
 			glVertex3f(0, ys*j, zs*k);
-			glVertex3f(gx, ys*j, zs*k);
+			glVertex3f(grd.x, ys*j, zs*k);
 		}
 	}
 	glEnd();
