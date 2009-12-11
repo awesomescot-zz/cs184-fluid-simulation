@@ -160,13 +160,21 @@ void myReshape(int w, int h) {
 	gluPerspective(45, ratio, 1, 100);
 }
 
+//temporary grid data
+	int gx = -1;
+	int gy = 1;
+	int gz = 1;
+	int xSplit = 5;
+	int ySplit = 5;
+	int zSplit = 5;
+
 void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	grd = grid(-1, 1, 1, 5, 5, 5);
+	//grd = grid(-1, 1, 1, 5, 5, 5);
 
 	// 5 random particles
 	viewport.addParticle(vec3(1, 1, 1));
@@ -273,6 +281,34 @@ void myDisplay() {
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	//draw grid
+/*	//z-axis aligned
+	glBegin(GL_LINES);
+	float xs = (float)gx/xSplit;
+	float ys = (float)gy/ySplit;
+	float zs = (float)gz/zSplit;
+	
+	for (int i = 0; i < xSplit + 1; i++) {
+		for (int j = 0; j < ySplit + 1; j++) {
+			glVertex3f(xs*i, ys*j, 0);
+			glVertex3f(xs*i, ys*j, gz);
+		}
+	}
+	//y-axis aligned
+	for (int i = 0; i < xSplit + 1; i++) {
+		for (int k = 0; k < zSplit + 1; k++) {
+			glVertex3f(xs*i, 0, zs*k);
+			glVertex3f(xs*i, gy, zs*k);
+		}
+	}
+	//x-axis aligned
+	for (int j = 0; j < ySplit + 1; j++) {
+		for (int k = 0; k < zSplit + 1; k++) {
+			glVertex3f(0, ys*j, zs*k);
+			glVertex3f(gx, ys*j, zs*k);
+		}
+	}
+	glEnd();*/
+
 	//z-axis aligned
 	glBegin(GL_LINES);
 	float xs = (float)grd.x/grd.xSplit;
@@ -292,7 +328,7 @@ void myDisplay() {
 			glVertex3f(xs*i, grd.y, zs*k);
 		}
 	}
-	//z-axis aligned
+	//x-axis aligned
 	for (int j = 0; j < grd.ySplit + 1; j++) {
 		for (int k = 0; k < grd.zSplit + 1; k++) {
 			glVertex3f(0, ys*j, zs*k);
