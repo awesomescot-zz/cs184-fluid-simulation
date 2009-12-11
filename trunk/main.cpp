@@ -159,7 +159,7 @@ void myReshape(int w, int h) {
 	//glOrtho(-2, 2, -2, 2, 1, 100);
 	gluPerspective(45, ratio, 1, 100);
 }
-
+/*
 //temporary grid data
 	int gx = -1;
 	int gy = 1;
@@ -167,14 +167,14 @@ void myReshape(int w, int h) {
 	int xSplit = 5;
 	int ySplit = 5;
 	int zSplit = 5;
-
+*/
 void initScene() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	//grd = grid(-1, 1, 1, 5, 5, 5);
+	grd = grid(-1, 1, 1, 5, 5, 5);
 
 	// 5 random particles
 	viewport.addParticle(vec3(1, 1, 1));
