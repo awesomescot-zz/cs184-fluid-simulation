@@ -22,6 +22,15 @@
 	#include <GL/glu.h>
 #endif
 
+// mouse stuff
+#define MAX_VERTS 1000
+bool dragging;
+float xPos, yPos;
+struct {float x, y;} verts[MAX_VERTS];
+int numVerts = 0;
+
+int WindowHeight, WindowWidth;
+
 float deltaT = 1;
 
 // temporary velocity updates for keyboard interaction
@@ -83,8 +92,6 @@ public:
 	}
 };
 
-Viewport viewport;
-
 //void advection() {
 	/*
 	 * velocity advection(){
@@ -102,6 +109,8 @@ Viewport viewport;
 	 * done
 	 * no particular timestep length or speed of velocity yet
 	 *
+	
+	/*
 	// grd = our global grid
 	grid newGrid = grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
 	vec3 vel, point;
@@ -148,7 +157,47 @@ Viewport viewport;
 	grd = newGrid;
 }*/
 
+void dragMouse(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN) {
+			dragging = true;
+			// TODO: these isn't being updated
+			// convert to xpos/ypos
+			xPos = ((float)x)/((float)(WindowWidth-1));
+			yPos = 1.0 - ((float)y)/((float)(WindowHeight-1));
+			// xPos = x;
+			// yPos = y;
+			// cout << x << " " << (float)x << " " << (float)(WindowWidth-1) << " " << ((float)x)/((float)(WindowWidth-1)) << " " << xPos << endl;
+		} else if (state == GLUT_UP && dragging) {
+			if (numVerts < MAX_VERTS) {
+				// cout << xPos << " " << yPos << endl;
+				verts[numVerts].x = (float) xPos;
+				verts[numVerts].y = (float) yPos;
+				// cout << verts[numVerts].x << " " << verts[numVerts].y << endl;
+				numVerts++;
+			}
+			dragging = false;
+			glutPostRedisplay();
+		}
+	}
+}
+
+void moveMouse(int x, int y) {
+	if (dragging) {
+		xPos = ((float)x)/((float)(WindowWidth-1));
+		yPos = ((float)y)/((float)(WindowHeight-1));
+		// xPos = x;
+		// yPos = y;
+		glutPostRedisplay();
+	}
+}
+
+
+Viewport viewport;
+
 void myReshape(int w, int h) {
+	WindowHeight = (h>1) ? h : 2;
+	WindowWidth = (w>1) ? w : 2;
 	viewport.w = w;
 	viewport.h = h;
 	GLfloat ratio = (GLfloat)w/(GLfloat)h;
@@ -280,6 +329,7 @@ void myDisplay() {
 	float ys = (float)grd.y/grd.ySplit;
 	float zs = (float)grd.z/grd.zSplit;
 	
+	// cout << xs << endl;
 	for (int i = 0; i < grd.xSplit + 1; i++) {
 		for (int j = 0; j < grd.ySplit + 1; j++) {
 			glVertex3f(xs*i, ys*j, 0);
@@ -300,6 +350,12 @@ void myDisplay() {
 			glVertex3f(grd.x, ys*j, zs*k);
 		}
 	}
+	// mouse stuff
+	for (int i = 0; i < numVerts; i++)
+		glVertex2f(verts[i].x, verts[i].y);
+	if (dragging)
+		glVertex2f((float) xPos, (float) yPos);
+
 	glEnd();
 
 	glEnable(GL_LIGHTING);
@@ -317,6 +373,19 @@ void myDisplay() {
 	}
 
 	glutSwapBuffers();
+}
+
+void testDisplay(void) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 0.0, 0.0);
+	if (numVerts > 1) {
+		int i;
+		glBegin(GL_LINES);
+		for (i = 0; i < numVerts; i++)
+			glVertex2f(verts[i].x, verts[i].y);
+		glEnd();
+	}
+	glFlush();
 }
 
 void myFrameMove() {
@@ -350,6 +419,8 @@ int main(int argc, char *argv[]) {
 	//keyboard interaction
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processInputKeys);
+	glutMouseFunc(dragMouse);
+	glutMotionFunc(moveMouse);
 
 	glutDisplayFunc(myDisplay);
 	glutReshapeFunc(myReshape);
