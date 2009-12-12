@@ -161,11 +161,12 @@ void dragMouse(int button, int state, int x, int y) {
 			dragging = true;
 			// TODO: these isn't being updated
 			// convert to xpos/ypos
-			xPos = ((float)x)/((float)(WindowWidth-1));
-			yPos = 1.0 - ((float)y)/((float)(WindowHeight-1));
+			// xPos = 1.0 - ((float)x)/((float)(WindowWidth-1));
+			xPos = 1.0 - ((float)x)/((float)(WindowWidth/2));
+			yPos = 1.0 - ((float)y)/((float)(WindowHeight/2));
 			// xPos = x;
 			// yPos = y;
-			// cout << x << " " << (float)x << " " << (float)(WindowWidth-1) << " " << ((float)x)/((float)(WindowWidth-1)) << " " << xPos << endl;
+			cout << x << " " << y << " " << xPos << " " << yPos << endl;
 		} else if (state == GLUT_UP && dragging) {
 			if (numVerts < MAX_VERTS) {
 				// cout << xPos << " " << yPos << endl;
@@ -182,8 +183,9 @@ void dragMouse(int button, int state, int x, int y) {
 
 void moveMouse(int x, int y) {
 	if (dragging) {
-		xPos = ((float)x)/((float)(WindowWidth-1));
-		yPos = ((float)y)/((float)(WindowHeight-1));
+		// xPos = 1.0 - ((float)x)/((float)(WindowWidth-1));
+		xPos = 1.0 - ((float)x)/((float)(WindowWidth/2));
+		yPos = 1.0 - ((float)y)/((float)(WindowHeight/2));
 		// xPos = x;
 		// yPos = y;
 		glutPostRedisplay();
