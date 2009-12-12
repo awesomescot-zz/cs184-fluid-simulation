@@ -26,7 +26,7 @@
 #define MAX_VERTS 1000
 bool dragging;
 float xPos, yPos;
-struct {float x, y;} verts[MAX_VERTS];
+struct verts{float x, y;} verts[MAX_VERTS];
 int numVerts = 0;
 
 int WindowHeight, WindowWidth;
@@ -92,7 +92,7 @@ public:
 	}
 };
 
-//void advection() {
+void advection() {
 	/*
 	 * velocity advection(){
 	 *   for every velocity
@@ -109,19 +109,18 @@ public:
 	 * done
 	 * no particular timestep length or speed of velocity yet
 	 *
-	
-	/*
+
+	*/
 	// grd = our global grid
 	grid newGrid = grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
 	vec3 vel, point;
 
 	// xi, yi, zi = indices for the cubes in the grid
-	for (float xi = 0; xi < grd.x; xi++) { // < or <= ? depends on how to handle border cases
-		for (float yi = 0; yi < grd.y; yi++) {
-			for (float zi = 0; zi < grd.z; zi++) {
+	for (int xi = 0; xi < grd.x; xi++) { // < or <= ? depends on how to handle border cases
+		for (int yi = 0; yi < grd.y; yi++) {
+			for (int zi = 0; zi < grd.z; zi++) {
 				// copy old grid info into new grid while we're at it
-				newGrid[xi][yi][zi].temp = grd[xi][yi][zi].temp;
-				newGrid[xi][yi][zi].comp = grd[xi][yi][zi].comp;
+				newGrid.cubeGrid[xi][yi][zi].temp = grd.cubeGrid[xi][yi][zi].temp;
 
 				// iterate through the x, y, and z faces (other three faces handled by other cubes)
 				// take point on face, get velocity, move back by (vel * deltaT), get new velocity, update on new grid
@@ -129,33 +128,33 @@ public:
 
 				// x/u face
 				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
-				point = vec3(xi * grd.xCubeSize, yi * grd.yCubeSize + (grd.yCubesize)/2, zi * grd.zCubeSize + (grd.zCubeSize)/2);
-				vel = getVelosity(point);
+				point = vec3(xi * grd.xCubeSize, yi * grd.yCubeSize + (grd.yCubeSize)/2, zi * grd.zCubeSize + (grd.zCubeSize)/2);
+				vel = grd.getVelosity(point);
 				point = point - (vel * deltaT);
-				vel = getVelosity(point);
-				newGrid[xi][yi][zi].u = vel[0];
+				vel = grd.getVelosity(point);
+				newGrid.cubeGrid[xi][yi][zi].u = vel[0];
 
 				// y/v face
 				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
 				point = vec3(xi * grd.xCubeSize + (grd.xCubeSize)/2, yi * grd.yCubeSize, zi * grd.zCubeSize + (grd.zCubeSize)/2);
-				vel = getVelosity(point);
+				vel = grd.getVelosity(point);
 				point = point - (vel * deltaT);
-				vel = getVelosity(point);
-				newGrid[xi][yi][zi].v = vel[1];
+				vel = grd.getVelosity(point);
+				newGrid.cubeGrid[xi][yi][zi].v = vel[1];
 
 				// z/w face
 				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
-				point = vec3(xi * grd.xCubeSize + (grd.xCubeSize)/2, yi * grd.yCubeSize + (grd.yCubesize)/2, zi * grd.zCubeSize);
-				vel = getVelosity(point);
+				point = vec3(xi * grd.xCubeSize + (grd.xCubeSize)/2, yi * grd.yCubeSize + (grd.yCubeSize)/2, zi * grd.zCubeSize);
+				vel = grd.getVelosity(point);
 				point = point - (vel * deltaT);
-				vel = getVelosity(point);
-				newGrid[xi][yi][zi].w = vel[2];
+				vel = grd.getVelosity(point);
+				newGrid.cubeGrid[xi][yi][zi].w = vel[2];
 			}
 		}
 	}
 
 	grd = newGrid;
-}*/
+}
 
 void dragMouse(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON) {
@@ -328,7 +327,7 @@ void myDisplay() {
 	float xs = (float)grd.x/grd.xSplit;
 	float ys = (float)grd.y/grd.ySplit;
 	float zs = (float)grd.z/grd.zSplit;
-	
+
 	// cout << xs << endl;
 	for (int i = 0; i < grd.xSplit + 1; i++) {
 		for (int j = 0; j < grd.ySplit + 1; j++) {
