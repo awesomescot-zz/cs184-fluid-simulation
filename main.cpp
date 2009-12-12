@@ -63,23 +63,14 @@ public:
 		return particles.size();
 	}
 
-	void sort() {
-		for (int i = 0; i < (int)(particles.size() - 1); i++) {
-			for (int j = 0; j < (int)(particles.size() - 1); j++) {
-				if (particles[j][2] < particles[j+1][2]) {
-					vec3 temp = particles[j];
-					particles[j] = particles[j+1];
-					particles[j+1] = temp;
-				}
-			}
-		}
-	}
-
 	void update() {
 		for (int i = 0; i < (int)particles.size(); i++) {
 			vec3 particleLoc = particles[i];
+			cout << particleLoc << endl;
 			vec3 velocity = grd.getVelosity(particleLoc);
-			//vec3 velocity = grd.;
+			cout << velocity << endl;
+			//vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
+
 			particles[i] = particles[i] + (velocity + vec3(vx, vy, vz)) * deltaT;
 		}
 	}
@@ -220,7 +211,8 @@ void initScene() {
 	grd.cubeGrid[3][3][3].u = 5;
 
 	// 5 random particles
-	viewport.addParticle(vec3(-.1, .1, .1));
+	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
+	viewport.addParticle(vec3(-0.1, .1, .1));
 	viewport.addParticle(vec3(-0.1, 0.1, .5));
 	//viewport.addParticle(vec3(0.7, 1, 4));
 	//viewport.addParticle(vec3(0.5, -0.7, 4));
@@ -316,6 +308,7 @@ void myDisplay() {
 	glLoadIdentity();
 	//gluLookAt(gx, gy, -2, 0, 0, gz, 0, 1, 0);
 	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
+	//gluLookAt(grd.x, grd.y, -2, 0, 0, grd.z, 0, 1, 0);
 
 	// before drawing, update new particle locations
 	advection();
@@ -370,7 +363,7 @@ void myDisplay() {
 
 		glPushMatrix();
 			glTranslatef(part[0], part[1], part[2]);
-			glutSolidSphere(0.25, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
+			glutSolidSphere(0.05, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
 		glPopMatrix();
 	}
 
