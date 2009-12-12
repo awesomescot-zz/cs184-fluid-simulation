@@ -76,11 +76,10 @@ public:
 	}
 
 	void update() {
-
 		for (int i = 0; i < (int)particles.size(); i++) {
-			//vec3 particleLoc = particles[i];
-			//vec3 velocity = grd.getVelosity(particleLoc);
-			vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
+			vec3 particleLoc = particles[i];
+			vec3 velocity = grd.getVelosity(particleLoc);
+			//vec3 velocity = grd.;
 			particles[i] = particles[i] + (velocity + vec3(vx, vy, vz)) * deltaT;
 		}
 	}
@@ -216,13 +215,14 @@ void initScene() {
 
 	// create grid
 	grd = grid(-1, 1, 1, 5, 5, 5);
+	grd.cubeGrid[3][3][3].u = 5;
 
 	// 5 random particles
-	viewport.addParticle(vec3(1, 1, 1));
-	viewport.addParticle(vec3(0.0, 0.0, 5));
-	viewport.addParticle(vec3(0.7, 1, 4));
-	viewport.addParticle(vec3(0.5, -0.7, 4));
-	viewport.addParticle(vec3(-0.5, -0.3, 9));
+	viewport.addParticle(vec3(-.1, .1, .1));
+	viewport.addParticle(vec3(-0.1, 0.1, .5));
+	//viewport.addParticle(vec3(0.7, 1, 4));
+	//viewport.addParticle(vec3(0.5, -0.7, 4));
+	//viewport.addParticle(vec3(-0.5, -0.3, 9));
 
 	myReshape(viewport.w, viewport.h);
 }
@@ -316,6 +316,7 @@ void myDisplay() {
 	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
 
 	// before drawing, update new particle locations
+	advection();
 	viewport.update();
 
 	// start drawing here
