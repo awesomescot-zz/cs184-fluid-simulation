@@ -170,6 +170,7 @@ void updatePos(int x, int y) {
 	zPos = pos[2];
 }
 
+/* original
 void dragMouse(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
@@ -186,6 +187,28 @@ void dragMouse(int button, int state, int x, int y) {
 				numVerts++;
 			}
 			dragging = false;
+			glutPostRedisplay();
+		}
+	}
+}
+*/
+void dragMouse(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN) {
+			dragging = true;
+			updatePos(x, y);
+			verts[numVerts].x = (float) xPos;
+			verts[numVerts].y = (float) yPos;
+			verts[numVerts].z = (float) zPos;
+			numVerts++;
+		} else if (state == GLUT_UP && dragging) {
+			if (numVerts < MAX_VERTS) {
+				verts[numVerts].x = (float) xPos;
+				verts[numVerts].y = (float) yPos;
+				verts[numVerts].z = (float) zPos;
+				numVerts++;
+				dragging = false;
+			}
 			glutPostRedisplay();
 		}
 	}
