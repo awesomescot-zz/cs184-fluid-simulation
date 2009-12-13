@@ -33,11 +33,6 @@ int WindowHeight, WindowWidth;
 
 float deltaT = 1;
 
-// temporary velocity updates for keyboard interaction
-float vx = 0;
-float vy = 0;
-float vz = 0;
-
 using namespace std;
 
 class Viewport;
@@ -50,6 +45,9 @@ private:
 
 public:
 	int w, h;
+	float tx, ty, tz;
+	int rotx, roty, rotz;
+	bool g;
 
 	void addParticle(vec3 loc) {
 		particles.push_back(loc);
@@ -66,12 +64,9 @@ public:
 	void update() {
 		for (int i = 0; i < (int)particles.size(); i++) {
 			vec3 particleLoc = particles[i];
-			cout << particleLoc << endl;
 			vec3 velocity = grd.getVelosity(particleLoc);
-			cout << velocity << endl;
-			//vec3 velocity = vec3(-1.0/30, -0.3/30, 1.0/30);
 
-			particles[i] = particles[i] + (velocity + vec3(vx, vy, vz)) * deltaT;
+			particles[i] = particles[i] + (velocity * deltaT);
 		}
 	}
 
@@ -210,13 +205,17 @@ void initScene() {
 	grd = grid(-1, 1, 1, 5, 5, 5);
 	grd.cubeGrid[3][3][3].u = 5;
 
+	viewport.tx = -grd.x/2;
+	viewport.ty = -grd.y/2;
+	viewport.tz = -3;
+	viewport.rotx = -30;
+	viewport.roty = -40;
+	viewport.rotz = 0;
+	viewport.g = true;
+
 	// 5 random particles
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
-	viewport.addParticle(vec3(-0.1, .1, .1));
-	viewport.addParticle(vec3(-0.1, 0.1, .5));
-	//viewport.addParticle(vec3(0.7, 1, 4));
-	//viewport.addParticle(vec3(0.5, -0.7, 4));
-	//viewport.addParticle(vec3(-0.5, -0.3, 9));
+	viewport.addParticle(vec3(-0.5, 0.5, 0.5));
 
 	myReshape(viewport.w, viewport.h);
 }
@@ -270,6 +269,9 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		case 'r' :
 			initScene();
 			break;
+		case 'g' :
+			viewport.g = !viewport.g;
+			break;
 	}
 }
 
@@ -278,22 +280,32 @@ void processInputKeys(int key, int x, int y) {
 	int mod = glutGetModifiers();
 	switch(key) {
 		case GLUT_KEY_LEFT :
-			vx = vx + (float)1/30;
+			if (mod == GLUT_ACTIVE_ALT)
+				viewport.roty = viewport.roty - 1;
+			else
+				viewport.tx = viewport.tx - .1;
 			break;
 		case GLUT_KEY_RIGHT :
-			vx = vx - (float)1/30;
+			if (mod == GLUT_ACTIVE_ALT)
+				viewport.roty = viewport.roty + 1;
+			else
+				viewport.tx = viewport.tx + .1;
 			break;
 		case GLUT_KEY_UP :
-			if (mod == GLUT_ACTIVE_ALT)
-				vz = vz - (float)1/30;
+			if (mod == GLUT_ACTIVE_SHIFT)
+				viewport.tz = viewport.tz + .1;
+			else if (mod == GLUT_ACTIVE_ALT)
+				viewport.rotx = viewport.rotx - 1;
 			else
-				vy = vy + (float)1/30;
+				viewport.ty = viewport.ty - .1;
 			break;
 		case GLUT_KEY_DOWN :
-			if (mod == GLUT_ACTIVE_ALT)
-				vz = vz + (float)1/30;
+			if (mod == GLUT_ACTIVE_SHIFT)
+				viewport.tz = viewport.tz - .1;
+			else if (mod == GLUT_ACTIVE_ALT)
+				viewport.rotx = viewport.rotx + 1;
 			else
-				vy = vy - (float)1/30;
+				viewport.ty = viewport.ty + .1;
 			break;
 	}
 }
@@ -306,9 +318,12 @@ void myDisplay() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	//gluLookAt(gx, gy, -2, 0, 0, gz, 0, 1, 0);
-	gluLookAt(0, 0, -2, 0, 0, 0, 0, 1, 0);
-	//gluLookAt(grd.x, grd.y, -2, 0, 0, grd.z, 0, 1, 0);
+	gluLookAt(0, 0, -1, 0, 0, 0, 0, 1, 0);
+
+	glTranslatef(viewport.tx, viewport.ty, -viewport.tz);
+	glRotatef(viewport.rotx, 1, 0, 0);
+	glRotatef(viewport.roty, 0, 1, 0);
+	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
 	advection();
@@ -317,41 +332,43 @@ void myDisplay() {
 	// start drawing here
 	glColor3f(1.0f, 1.0f, 1.0f);
 
-	//draw grid
-	//z-axis aligned
-	glBegin(GL_LINES);
-	float xs = (float)grd.x/grd.xSplit;
-	float ys = (float)grd.y/grd.ySplit;
-	float zs = (float)grd.z/grd.zSplit;
+	if (viewport.g) {
+		//draw grid
+		//z-axis aligned
+		glBegin(GL_LINES);
+		float xs = (float)grd.x/grd.xSplit;
+		float ys = (float)grd.y/grd.ySplit;
+		float zs = (float)grd.z/grd.zSplit;
 
-	// cout << xs << endl;
-	for (int i = 0; i < grd.xSplit + 1; i++) {
+		// cout << xs << endl;
+		for (int i = 0; i < grd.xSplit + 1; i++) {
+			for (int j = 0; j < grd.ySplit + 1; j++) {
+				glVertex3f(xs*i, ys*j, 0);
+				glVertex3f(xs*i, ys*j, grd.z);
+			}
+		}
+		//y-axis aligned
+		for (int i = 0; i < grd.xSplit + 1; i++) {
+			for (int k = 0; k < grd.zSplit + 1; k++) {
+				glVertex3f(xs*i, 0, zs*k);
+				glVertex3f(xs*i, grd.y, zs*k);
+			}
+		}
+		//x-axis aligned
 		for (int j = 0; j < grd.ySplit + 1; j++) {
-			glVertex3f(xs*i, ys*j, 0);
-			glVertex3f(xs*i, ys*j, grd.z);
+			for (int k = 0; k < grd.zSplit + 1; k++) {
+				glVertex3f(0, ys*j, zs*k);
+				glVertex3f(grd.x, ys*j, zs*k);
+			}
 		}
-	}
-	//y-axis aligned
-	for (int i = 0; i < grd.xSplit + 1; i++) {
-		for (int k = 0; k < grd.zSplit + 1; k++) {
-			glVertex3f(xs*i, 0, zs*k);
-			glVertex3f(xs*i, grd.y, zs*k);
-		}
-	}
-	//x-axis aligned
-	for (int j = 0; j < grd.ySplit + 1; j++) {
-		for (int k = 0; k < grd.zSplit + 1; k++) {
-			glVertex3f(0, ys*j, zs*k);
-			glVertex3f(grd.x, ys*j, zs*k);
-		}
-	}
-	// mouse stuff
-	for (int i = 0; i < numVerts; i++)
-		glVertex2f(verts[i].x, verts[i].y);
-	if (dragging)
-		glVertex2f((float) xPos, (float) yPos);
+		// mouse stuff
+		for (int i = 0; i < numVerts; i++)
+			glVertex2f(verts[i].x, verts[i].y);
+		if (dragging)
+			glVertex2f((float) xPos, (float) yPos);
 
-	glEnd();
+		glEnd();
+	}
 
 	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
