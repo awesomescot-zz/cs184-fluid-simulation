@@ -25,8 +25,8 @@
 // mouse stuff
 #define MAX_VERTS 1000
 bool dragging;
-float xPos, yPos;
-struct verts{float x, y;} verts[MAX_VERTS];
+float xPos, yPos, zPos;
+struct verts{float x, y, z;} verts[MAX_VERTS];
 int numVerts = 0;
 
 int WindowHeight, WindowWidth;
@@ -141,23 +141,47 @@ void advection() {
 	grd = newGrid;
 }
 
+vec3 GetOGLPos(int x, int y) {
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble posX, posY, posZ;
+
+	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+
+	gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+	return vec3(posX, posY, posZ);
+}
+
+void updatePos(int x, int y) {
+	// xPos = 1.0 - ((float)x)/((float)(WindowWidth/2 - 1));
+	// yPos = 1.0 - ((float)y)/((float)(WindowHeight/2 -1));
+	vec3 pos = GetOGLPos(x, y);
+	xPos = pos[0];
+	yPos = pos[1];
+	zPos = pos[2];
+}
+
 void dragMouse(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			dragging = true;
-			// TODO: these isn't being updated
-			// convert to xpos/ypos
-			// xPos = 1.0 - ((float)x)/((float)(WindowWidth-1));
-			xPos = 1.0 - ((float)x)/((float)(WindowWidth/2));
-			yPos = 1.0 - ((float)y)/((float)(WindowHeight/2));
-			// xPos = x;
-			// yPos = y;
-			cout << x << " " << y << " " << xPos << " " << yPos << endl;
+			updatePos(x, y);
+			// cout << x << " " << y << " " << xPos << " " << yPos << endl;
 		} else if (state == GLUT_UP && dragging) {
 			if (numVerts < MAX_VERTS) {
 				// cout << xPos << " " << yPos << endl;
 				verts[numVerts].x = (float) xPos;
 				verts[numVerts].y = (float) yPos;
+				verts[numVerts].z = (float) zPos;
 				// cout << verts[numVerts].x << " " << verts[numVerts].y << endl;
 				numVerts++;
 			}
@@ -169,11 +193,7 @@ void dragMouse(int button, int state, int x, int y) {
 
 void moveMouse(int x, int y) {
 	if (dragging) {
-		// xPos = 1.0 - ((float)x)/((float)(WindowWidth-1));
-		xPos = 1.0 - ((float)x)/((float)(WindowWidth/2));
-		yPos = 1.0 - ((float)y)/((float)(WindowHeight/2));
-		// xPos = x;
-		// yPos = y;
+		updatePos(x, y);
 		glutPostRedisplay();
 	}
 }
@@ -363,9 +383,9 @@ void myDisplay() {
 		}
 		// mouse stuff
 		for (int i = 0; i < numVerts; i++)
-			glVertex2f(verts[i].x, verts[i].y);
+			glVertex3f(verts[i].x, verts[i].y, verts[i].z);
 		if (dragging)
-			glVertex2f((float) xPos, (float) yPos);
+			glVertex3f((float) xPos, (float) yPos, (float) zPos);
 
 		glEnd();
 	}
