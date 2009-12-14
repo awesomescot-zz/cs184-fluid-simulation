@@ -92,7 +92,7 @@ vec3 grid::getVelosity(vec3 location){
 	int gridSpoty = location[1] / yCubeSize;
 	int gridSpotz = location[2] / zCubeSize;
 	float secondRightSideAverage, secondLeftSideAverage, secondTopSideAverage, secondBottomSideAverage, secondCloseSideAverage, secondFarSideAverage, fullFarSideAverage, firstCloseSideAverage, firstFarSideAverage, fullCloseSideAverage, firstRightSideAverage, firstLeftSideAverage, firstBottomSideAverage, firstTopSideAverage, fullRightSideAverage, fullLeftSideAverage, fullTopSideAverage, fullBottomSideAverage, ufullAverage, vfullAverage, wfullAverage;
-	
+
 	//W
 	float zdistBack = location[2] - (gridSpotz*zCubeSize);
 	float zdistForward = (gridSpotz+1)*zCubeSize - location[2];
@@ -176,17 +176,15 @@ vec3 grid::getVelosity(vec3 location){
 					else secondFarSideAverage = 0;
 				}
 			}else{
-				if(gridSpotx > 0){
-					secondCloseSideAverage = 0;
-					secondFarSideAverage = 0;
-				}
+				secondCloseSideAverage = 0;
+				secondFarSideAverage = 0;
 			}
 			fullCloseSideAverage = (ydistForward/yCubeSize)*firstCloseSideAverage + (ydistBack/yCubeSize)*secondCloseSideAverage;
 			fullFarSideAverage = (ydistForward/yCubeSize)*firstFarSideAverage + (ydistBack/yCubeSize)*secondFarSideAverage;
 		} else{//calculate for y-1
 			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
 			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
-			if(gridSpoty+1 < ySplit){
+			if(gridSpoty > 0){
 				if(gridSpotx > 0){
 					secondCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty-1][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz].w;
 					if(gridSpotz+1 < zSplit) secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty-1][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz+1].w;
@@ -197,10 +195,8 @@ vec3 grid::getVelosity(vec3 location){
 					else secondFarSideAverage = 0;
 				}
 			}else{
-				if(gridSpotx > 0){
-					secondCloseSideAverage = 0;
-					secondFarSideAverage = 0;
-				}
+				secondCloseSideAverage = 0;
+				secondFarSideAverage = 0;
 			}
 			fullCloseSideAverage = (ydistBack/yCubeSize)*firstCloseSideAverage + (ydistForward/yCubeSize)*secondCloseSideAverage;
 			fullFarSideAverage = (ydistBack/yCubeSize)*firstFarSideAverage + (ydistForward/yCubeSize)*secondFarSideAverage;
