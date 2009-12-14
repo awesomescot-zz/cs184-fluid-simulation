@@ -26,8 +26,10 @@
 #define MAX_VERTS 1000
 bool dragging;
 float xPos, yPos, zPos;
-struct verts{float x, y, z;} verts[MAX_VERTS];
+struct verts{float x, y, z;} verts[MAX_VERTS], velVerts[MAX_VERTS];
 int numVerts = 0;
+
+int numVelVerts = 0;
 
 int WindowHeight, WindowWidth;
 
@@ -76,6 +78,51 @@ public:
 		}
 	}
 };
+
+void showVelocities() {
+	/**
+	 * render a vector originating in the center of each cubeGrid
+	 * representing the velocity
+	 * get point, add vertex, add velocity vector to point, add vertex
+	 * later, draw all the lines
+	 * Q: how long to render based on magnitude?
+	 * for now, just normalize everything and make, say, 1/2 cube length
+	 * Q: don't we have to clear the velocities and redo at each time step?
+	 */
+	// TODO: button to toggle velocity vectors
+	
+	vec3 vel, point;
+
+	// first, clear it from before
+	if (numVelVerts != 0) {
+		for (int i = 0; i < numVelVerts; i++) {
+			// clear all the velocity vertex info
+			velVerts[i].x = 0;
+			velVerts[i].y = 0;
+			velVerts[i].z = 0;
+		}
+		numVelVerts = 0;
+	}
+	
+	// center of cube = cube index * cube length + 1/2 cube length
+	for (int xi = 0; xi < grd.x; xi++) {
+		for (int yi = 0; yi < grd.y; yi++) {
+			for (int zi = 0; zi < grd.z; zi++) {
+				point = vec3((xi * grd.xCubeSize + grd.xCubeSize / 2), (yi * grd.yCubeSize + grd.yCubeSize / 2), (zi * grd.zCubeSize + grd.zCubeSize / 2));
+				velVerts[numVelVerts].x = point[0];
+				velVerts[numVelVerts].y = point[1];
+				velVerts[numVelVerts].z = point[2];
+				numVelVerts++;
+				vel = getVelosity(point).normalize(); // normalize for now to keep it simple
+				point += vel;
+				velVerts[numVelVerts].x = point[0];
+				velVerts[numVelVerts].y = point[1];
+				velVerts[numVelVerts].z = point[2];
+				numVelVerts++;
+			}
+		}
+	}
+}
 
 void advection() {
 	/*
@@ -412,6 +459,9 @@ void myDisplay() {
 			glVertex3f(verts[i].x, verts[i].y, verts[i].z);
 		if (dragging)
 			glVertex3f((float) xPos, (float) yPos, (float) zPos);
+
+		// show velocity stuff
+
 
 		glEnd();
 	}
