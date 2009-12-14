@@ -82,15 +82,17 @@ cube grid::getCube(vec3 location){
 
 vec3 grid::getVelosity(vec3 location){
 	//check for out of bounds locations
+	cout << "getVlosity" << endl;
 	if(location[0] >= x || location[0] < 0) return vec3(0,0,0);
 	if(location[1] >= y || location[1] < 0) return vec3(0,0,0);
 	if(location[2] >= z || location[2] < 0) return vec3(0,0,0);
+	cout << "here" << endl;
 
 	int gridSpotx = location[0] / xCubeSize;
 	int gridSpoty = location[1] / yCubeSize;
 	int gridSpotz = location[2] / zCubeSize;
 	float secondRightSideAverage, secondLeftSideAverage, secondTopSideAverage, secondBottomSideAverage, secondCloseSideAverage, secondFarSideAverage, fullFarSideAverage, firstCloseSideAverage, firstFarSideAverage, fullCloseSideAverage, firstRightSideAverage, firstLeftSideAverage, firstBottomSideAverage, firstTopSideAverage, fullRightSideAverage, fullLeftSideAverage, fullTopSideAverage, fullBottomSideAverage, ufullAverage, vfullAverage, wfullAverage;
-
+	
 	//W
 	float zdistBack = location[2] - (gridSpotz*zCubeSize);
 	float zdistForward = (gridSpotz+1)*zCubeSize - location[2];
