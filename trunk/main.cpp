@@ -114,7 +114,9 @@ void advection() {
 				// x/u face
 				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
 				point = vec3(xi * grd.xCubeSize, yi * grd.yCubeSize + (grd.yCubeSize)/2, zi * grd.zCubeSize + (grd.zCubeSize)/2);
+				cout << point << endl;
 				vel = grd.getVelosity(point);
+				cout << vel << endl;
 				point = point - (vel * deltaT);
 				vel = grd.getVelosity(point);
 				newGrid.cubeGrid[xi][yi][zi].u = vel[0];
@@ -245,11 +247,11 @@ void initScene() {
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	grd = grid(-1, 1, 1, 5, 5, 5);
+	grd = grid(1, 1, 1, 5, 5, 5);
 	grd.cubeGrid[3][3][3].u = 5;
 
-	viewport.tx = -grd.x/2;
-	viewport.ty = -grd.y/2;
+	viewport.tx = grd.x/2;
+	viewport.ty = grd.y/2;
 	viewport.tz = -3;
 	viewport.rotx = -30;
 	viewport.roty = -40;
@@ -258,8 +260,8 @@ void initScene() {
 
 	// 5 random particles
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
-	viewport.addParticle(vec3(-0.5, 0.5, 0.5));
-	viewport.addParticle(vec3(-0.1, 0.1, 0.1));
+	viewport.addParticle(vec3(0.5, 0.5, 0.5));
+	viewport.addParticle(vec3(0.1, 0.1, 0.1));
 
 	myReshape(viewport.w, viewport.h);
 }
