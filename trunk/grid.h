@@ -10,6 +10,8 @@ struct cube{
 	float u, v, w, temp;
 };
 
+
+
 class grid {
 public:
 	cube ***cubeGrid;

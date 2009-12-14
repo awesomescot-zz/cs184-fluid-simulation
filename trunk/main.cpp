@@ -259,6 +259,7 @@ void initScene() {
 	// 5 random particles
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
 	viewport.addParticle(vec3(-0.5, 0.5, 0.5));
+	viewport.addParticle(vec3(-0.1, 0.1, 0.1));
 
 	myReshape(viewport.w, viewport.h);
 }
