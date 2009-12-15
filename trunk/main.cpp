@@ -67,9 +67,13 @@ public:
 		for (int i = 0; i < (int)particles.size(); i++) {
 			vec3 particleLoc = particles[i];
 			vec3 velocity = grd.getVelosity(particleLoc);
-
+			//cout << i << " velocity: " << velocity << endl;
 			particles[i] = particles[i] + (velocity * deltaT);
 		}
+	}
+
+	void clearParticles() {
+		particles.clear();
 	}
 
 	void particlesLocs() {
@@ -112,13 +116,22 @@ void showVelocities() {
 				velVerts[numVelVerts].x = point[0];
 				velVerts[numVelVerts].y = point[1];
 				velVerts[numVelVerts].z = point[2];
+		//		cout << "x: " << velVerts[numVelVerts].x << endl;
+		//		cout << "y: " << velVerts[numVelVerts].y << endl;
+		//		cout << "z: " << velVerts[numVelVerts].z << endl;
 				numVelVerts++;
-				vel = getVelosity(point).normalize(); // normalize for now to keep it simple
+				vel = grd.getVelosity(point).normalize(); // normalize for now to keep it simple
 				point += vel;
 				velVerts[numVelVerts].x = point[0];
 				velVerts[numVelVerts].y = point[1];
 				velVerts[numVelVerts].z = point[2];
 				numVelVerts++;
+
+				//draw the line:
+				glBegin(GL_LINES);
+					glVertex3f(velVerts[numVelVerts-1].x, velVerts[numVelVerts-1].y, velVerts[numVelVerts-1].z);
+					glVertex3f(velVerts[numVelVerts].x, velVerts[numVelVerts].y, velVerts[numVelVerts].z);
+				glEnd();
 			}
 		}
 	}
@@ -161,9 +174,7 @@ void advection() {
 				// x/u face
 				// multiply by cube size to get correct input (want point in the grid, not cube index) for getVelosity
 				point = vec3(xi * grd.xCubeSize, yi * grd.yCubeSize + (grd.yCubeSize)/2, zi * grd.zCubeSize + (grd.zCubeSize)/2);
-				cout << point << endl;
 				vel = grd.getVelosity(point);
-				cout << vel << endl;
 				point = point - (vel * deltaT);
 				vel = grd.getVelosity(point);
 				newGrid.cubeGrid[xi][yi][zi].u = vel[0];
@@ -295,20 +306,21 @@ void initScene() {
 
 	// create grid
 	grd = grid(1, 1, 1, 5, 5, 5);
-	grd.cubeGrid[3][3][3].u = 5;
+	grd.cubeGrid[1][1][1].u = 5;
 
-	viewport.tx = grd.x/2;
-	viewport.ty = grd.y/2;
-	viewport.tz = -3;
+	viewport.tx = -.85*grd.x;
+	viewport.ty = -grd.y/5;
+	viewport.tz = -2;
 	viewport.rotx = -30;
-	viewport.roty = -40;
+	viewport.roty = 61;
 	viewport.rotz = 0;
 	viewport.g = true;
 
 	// 5 random particles
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
+	viewport.clearParticles();
 	viewport.addParticle(vec3(0.5, 0.5, 0.5));
-	viewport.addParticle(vec3(0.1, 0.1, 0.1));
+	viewport.addParticle(vec3(0.2, 0.2, 0.2));
 
 	myReshape(viewport.w, viewport.h);
 }
@@ -419,7 +431,7 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	advection();
+	//advection();
 	viewport.update();
 
 	// start drawing here
@@ -460,11 +472,11 @@ void myDisplay() {
 		if (dragging)
 			glVertex3f((float) xPos, (float) yPos, (float) zPos);
 
-		// show velocity stuff
-
-
 		glEnd();
 	}
+
+	//show velocities
+	showVelocities();
 
 	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
