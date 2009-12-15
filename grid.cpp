@@ -82,11 +82,11 @@ cube grid::getCube(vec3 location){
 
 vec3 grid::getVelosity(vec3 location){
 	//check for out of bounds locations
-	cout << "getVlosity" << endl;
+	//printf("x = %f, y = %f, z=%f",x,y,z);
 	if(location[0] >= x || location[0] < 0) return vec3(0,0,0);
 	if(location[1] >= y || location[1] < 0) return vec3(0,0,0);
 	if(location[2] >= z || location[2] < 0) return vec3(0,0,0);
-	cout << "here" << endl;
+	//cout << "here" << endl;
 
 	int gridSpotx = location[0] / xCubeSize;
 	int gridSpoty = location[1] / yCubeSize;
@@ -97,7 +97,7 @@ vec3 grid::getVelosity(vec3 location){
 	float zdistBack = location[2] - (gridSpotz*zCubeSize);
 	float zdistForward = (gridSpotz+1)*zCubeSize - location[2];
 	if( (gridSpotx*xCubeSize) + .5*xCubeSize < location[0]){//if the point is over half way through the cube in the x direction
-		float xdistBack = location[0] - (gridSpotx*xCubeSize) + .5*xCubeSize;
+		float xdistBack = location[0] - ((gridSpotx*xCubeSize) + .5*xCubeSize);
 		float xdistForward = (gridSpotx+1)*xCubeSize + .5*xCubeSize - location[0];
 		if(gridSpotx+1 >= xSplit){ //check x bounds
 			firstCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w;
@@ -109,7 +109,7 @@ vec3 grid::getVelosity(vec3 location){
 			else firstFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx+1][gridSpoty][gridSpotz+1].w;
 		}
 		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
-			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty*yCubeSize) + .5*yCubeSize);
 			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpotx+1 >= xSplit){
 				if(gridSpoty+1 >= ySplit){
@@ -133,7 +133,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullCloseSideAverage = (ydistForward/yCubeSize)*firstCloseSideAverage + (ydistBack/yCubeSize)*secondCloseSideAverage;
 			fullFarSideAverage = (ydistForward/yCubeSize)*firstFarSideAverage + (ydistBack/yCubeSize)*secondFarSideAverage;
 		} else{//calculate for y-1
-			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty-1)*yCubeSize + .5*yCubeSize);
 			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty > 0){
 				if(gridSpotx+1 < xSplit){
@@ -151,7 +151,7 @@ vec3 grid::getVelosity(vec3 location){
 		}
 		wfullAverage = (zdistBack/zCubeSize)*fullFarSideAverage + (zdistForward/zCubeSize)*fullCloseSideAverage;
 	}else{
-		float xdistBack = location[0] - (gridSpotx-1)*xCubeSize + .5*xCubeSize;
+		float xdistBack = location[0] - ((gridSpotx-1)*xCubeSize + .5*xCubeSize);
 		float xdistForward = (gridSpotx)*xCubeSize + .5*xCubeSize - location[0];
 		if(gridSpotx > 0){
 			firstCloseSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz].w + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].w;
@@ -163,7 +163,7 @@ vec3 grid::getVelosity(vec3 location){
 			else firstFarSideAverage = 0;
 		}
 		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
-			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty*yCubeSize) + .5*yCubeSize);
 			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty+1 < ySplit){
 				if(gridSpotx > 0){
@@ -182,7 +182,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullCloseSideAverage = (ydistForward/yCubeSize)*firstCloseSideAverage + (ydistBack/yCubeSize)*secondCloseSideAverage;
 			fullFarSideAverage = (ydistForward/yCubeSize)*firstFarSideAverage + (ydistBack/yCubeSize)*secondFarSideAverage;
 		} else{//calculate for y-1
-			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty-1)*yCubeSize + .5*yCubeSize);
 			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty > 0){
 				if(gridSpotx > 0){
@@ -218,10 +218,12 @@ vec3 grid::getVelosity(vec3 location){
 	 *  -------
 	 */
 	//U
+	printf("gridSpot = %d, %d, %d", gridSpotx, gridSpoty, gridSpotz);
+	cout << location << endl;
 	float xdistBack = location[0] - (gridSpotx*xCubeSize);
 	float xdistForward = (gridSpotx+1)*xCubeSize - location[0];
 	if( (gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//if the point is over half way through the cube in the z direction
-		float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
+		float zdistBack = location[2] - ((gridSpotz*zCubeSize) + .5*zCubeSize);
 		float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
 		if(gridSpoty+1 < zSplit){
 			firstLeftSideAverage = (zdistForward/zCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].u + (zdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz+1].u;
@@ -229,7 +231,7 @@ vec3 grid::getVelosity(vec3 location){
 			else firstRightSideAverage = 0;
 		}
 		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
-			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty*yCubeSize) + .5*yCubeSize);
 			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty+1<ySplit){
 				if(gridSpotz+1<zSplit){
@@ -248,7 +250,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullLeftSideAverage = (ydistForward/yCubeSize)*firstLeftSideAverage + (ydistBack/yCubeSize)*secondLeftSideAverage;
 			fullRightSideAverage = (ydistForward/yCubeSize)*firstRightSideAverage + (ydistBack/yCubeSize)*secondRightSideAverage;
 		} else{//calculate for y-1
-			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty-1)*yCubeSize + .5*yCubeSize);
 			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty>0){
 				if(gridSpotz+1<zSplit){
@@ -269,7 +271,7 @@ vec3 grid::getVelosity(vec3 location){
 		}
 		ufullAverage = (xdistBack/xCubeSize)*fullRightSideAverage + (xdistForward/xCubeSize)*fullLeftSideAverage;
 	}else{
-		float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+		float zdistBack = location[2] - ((gridSpotz-1)*zCubeSize + .5*zCubeSize);
 		float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
 		if(gridSpotx+1<xSplit){
 			if(gridSpotz>0){
@@ -287,8 +289,9 @@ vec3 grid::getVelosity(vec3 location){
 				firstLeftSideAverage = (zdistBack/zCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].u;
 			}
 		}
+
 		if((gridSpoty*yCubeSize) + .5*yCubeSize < location[1]){//over y half way point calculate for y+1
-			float ydistBack = location[1] - (gridSpoty*yCubeSize) + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty*yCubeSize) + .5*yCubeSize);
 			float ydistForward = (gridSpoty+1)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty+1<ySplit){
 				if(gridSpotz>0){
@@ -307,7 +310,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullLeftSideAverage = (ydistForward/yCubeSize)*firstLeftSideAverage + (ydistBack/yCubeSize)*secondLeftSideAverage;
 			fullRightSideAverage = (ydistForward/yCubeSize)*firstRightSideAverage + (ydistBack/yCubeSize)*secondRightSideAverage;
 		} else{//calculate for y-1
-			float ydistBack = location[1] - (gridSpoty-1)*yCubeSize + .5*yCubeSize;
+			float ydistBack = location[1] - ((gridSpoty-1)*yCubeSize + .5*yCubeSize);
 			float ydistForward = (gridSpoty)*yCubeSize + .5*yCubeSize - location[1];
 			if(gridSpoty>0){
 				if(gridSpotz>0){
@@ -333,7 +336,7 @@ vec3 grid::getVelosity(vec3 location){
 	float ydistBack = location[1] - (gridSpoty*yCubeSize);
 	float ydistForward = (gridSpoty+1)*yCubeSize - location[1];
 	if( (gridSpotx*xCubeSize) + .5*xCubeSize < location[0]){//if the point is over half way through the cube in the x direction
-		float xdistBack = location[0] - (gridSpotx*xCubeSize) + .5*xCubeSize;
+		float xdistBack = location[0] - ((gridSpotx*xCubeSize) + .5*xCubeSize);
 		float xdistForward = (gridSpotx+1)*xCubeSize + .5*xCubeSize - location[0];
 		if(gridSpoty+1<ySplit){
 			if(gridSpotx+1<xSplit){
@@ -349,7 +352,7 @@ vec3 grid::getVelosity(vec3 location){
 			else firstBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].v;
 		}
 		if((gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//over z half way point calculate for z+1
-			float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
+			float zdistBack = location[2] - ((gridSpotz*zCubeSize) + .5*zCubeSize);
 			float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
 			if(gridSpotz+1<zSplit){
 				if(gridSpotx+1<xSplit){
@@ -368,7 +371,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullBottomSideAverage = (zdistForward/zCubeSize)*firstBottomSideAverage + (zdistBack/zCubeSize)*secondBottomSideAverage;
 			fullTopSideAverage = (zdistForward/zCubeSize)*firstTopSideAverage + (zdistBack/zCubeSize)*secondTopSideAverage;
 		} else{//calculate for y-1
-			float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+			float zdistBack = location[2] - ((gridSpotz-1)*zCubeSize + .5*zCubeSize);
 			float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
 			if(gridSpotz>0){
 				if(gridSpotx+1<xSplit){
@@ -389,7 +392,7 @@ vec3 grid::getVelosity(vec3 location){
 		}
 		vfullAverage = (ydistBack/yCubeSize)*fullTopSideAverage + (ydistForward/yCubeSize)*fullBottomSideAverage;
 	}else{
-		float xdistBack = location[0] - (gridSpotx-1)*xCubeSize + .5*xCubeSize;
+		float xdistBack = location[0] - ((gridSpotx-1)*xCubeSize + .5*xCubeSize);
 		float xdistForward = (gridSpotx)*xCubeSize + .5*xCubeSize - location[0];
 		if(gridSpotx>0){
 			firstBottomSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx-1][gridSpoty][gridSpotz].v + (xdistBack/xCubeSize)*cubeGrid[gridSpotx][gridSpoty][gridSpotz].v;
@@ -401,7 +404,7 @@ vec3 grid::getVelosity(vec3 location){
 			else firstTopSideAverage = 0;
 		}
 		if((gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//over z half way point calculate for z+1
-			float zdistBack = location[2] - (gridSpotz*zCubeSize) + .5*zCubeSize;
+			float zdistBack = location[2] - ((gridSpotz*zCubeSize) + .5*zCubeSize);
 			float zdistForward = (gridSpotz+1)*zCubeSize + .5*zCubeSize - location[2];
 			if(gridSpotz+1<zSplit){
 				if(gridSpotx>0){
@@ -417,7 +420,7 @@ vec3 grid::getVelosity(vec3 location){
 			fullBottomSideAverage = (zdistForward/zCubeSize)*firstBottomSideAverage + (zdistBack/zCubeSize)*secondBottomSideAverage;
 			fullTopSideAverage = (zdistForward/zCubeSize)*firstTopSideAverage + (zdistBack/zCubeSize)*secondTopSideAverage;
 		} else{//calculate for y-1
-			float zdistBack = location[2] - (gridSpotz-1)*zCubeSize + .5*zCubeSize;
+			float zdistBack = location[2] - ((gridSpotz-1)*zCubeSize + .5*zCubeSize);
 			float zdistForward = (gridSpotz)*zCubeSize + .5*zCubeSize - location[2];
 			if(gridSpotz>0){
 				if(gridSpotx>0){
