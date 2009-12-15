@@ -49,7 +49,7 @@ public:
 	int w, h;
 	float tx, ty, tz;
 	int rotx, roty, rotz;
-	bool g;
+	bool g, v;
 
 	void addParticle(vec3 loc) {
 		particles.push_back(loc);
@@ -109,16 +109,13 @@ void showVelocities() {
 	}
 	
 	// center of cube = cube index * cube length + 1/2 cube length
-	for (int xi = 0; xi < grd.x; xi++) {
-		for (int yi = 0; yi < grd.y; yi++) {
-			for (int zi = 0; zi < grd.z; zi++) {
+	for (int xi = 0; xi < grd.xSplit; xi++) {
+		for (int yi = 0; yi < grd.ySplit; yi++) {
+			for (int zi = 0; zi < grd.zSplit; zi++) {
 				point = vec3((xi * grd.xCubeSize + grd.xCubeSize / 2), (yi * grd.yCubeSize + grd.yCubeSize / 2), (zi * grd.zCubeSize + grd.zCubeSize / 2));
 				velVerts[numVelVerts].x = point[0];
 				velVerts[numVelVerts].y = point[1];
 				velVerts[numVelVerts].z = point[2];
-		//		cout << "x: " << velVerts[numVelVerts].x << endl;
-		//		cout << "y: " << velVerts[numVelVerts].y << endl;
-		//		cout << "z: " << velVerts[numVelVerts].z << endl;
 				numVelVerts++;
 				vel = grd.getVelosity(point).normalize(); // normalize for now to keep it simple
 				point += vel;
@@ -128,9 +125,10 @@ void showVelocities() {
 				numVelVerts++;
 
 				//draw the line:
+				glColor3f(1.0f, 1.0f, 1.0f);
 				glBegin(GL_LINES);
+					glVertex3f(velVerts[numVelVerts-2].x, velVerts[numVelVerts-2].y, velVerts[numVelVerts-2].z);
 					glVertex3f(velVerts[numVelVerts-1].x, velVerts[numVelVerts-1].y, velVerts[numVelVerts-1].z);
-					glVertex3f(velVerts[numVelVerts].x, velVerts[numVelVerts].y, velVerts[numVelVerts].z);
 				glEnd();
 			}
 		}
@@ -306,7 +304,9 @@ void initScene() {
 
 	// create grid
 	grd = grid(1, 1, 1, 5, 5, 5);
-	grd.cubeGrid[1][1][1].u = 5;
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
+	grd.cubeGrid[1][2][1].w = .25;
 
 	viewport.tx = -.85*grd.x;
 	viewport.ty = -grd.y/5;
@@ -315,6 +315,7 @@ void initScene() {
 	viewport.roty = 61;
 	viewport.rotz = 0;
 	viewport.g = true;
+	viewport.v = false;
 
 	// 5 random particles
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
@@ -377,6 +378,9 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		case 'g' :
 			viewport.g = !viewport.g;
 			break;
+		case 'v' :
+			viewport.v = !viewport.v;
+			break;
 	}
 }
 
@@ -386,13 +390,13 @@ void processInputKeys(int key, int x, int y) {
 	switch(key) {
 		case GLUT_KEY_LEFT :
 			if (mod == GLUT_ACTIVE_ALT)
-				viewport.roty = viewport.roty - 1;
+				viewport.roty = viewport.roty + 1;
 			else
 				viewport.tx = viewport.tx - .1;
 			break;
 		case GLUT_KEY_RIGHT :
 			if (mod == GLUT_ACTIVE_ALT)
-				viewport.roty = viewport.roty + 1;
+				viewport.roty = viewport.roty - 1;
 			else
 				viewport.tx = viewport.tx + .1;
 			break;
@@ -466,6 +470,7 @@ void myDisplay() {
 				glVertex3f(grd.x, ys*j, zs*k);
 			}
 		}
+
 		// mouse stuff
 		for (int i = 0; i < numVerts; i++)
 			glVertex3f(verts[i].x, verts[i].y, verts[i].z);
@@ -476,7 +481,8 @@ void myDisplay() {
 	}
 
 	//show velocities
-	showVelocities();
+	if (viewport.v)
+		showVelocities();
 
 	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
