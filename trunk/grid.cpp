@@ -145,6 +145,9 @@ vec3 grid::getVelosity(vec3 location){
 					if(gridSpotz+1<zSplit) secondFarSideAverage = (xdistForward/xCubeSize)*cubeGrid[gridSpotx][gridSpoty-1][gridSpotz+1].w;
 					else secondFarSideAverage = 0;
 				}
+			}else{
+				secondCloseSideAverage = 0;
+				secondFarSideAverage = 0;
 			}
 			fullCloseSideAverage = (ydistBack/yCubeSize)*firstCloseSideAverage + (ydistForward/yCubeSize)*secondCloseSideAverage;
 			fullFarSideAverage = (ydistBack/yCubeSize)*firstFarSideAverage + (ydistForward/yCubeSize)*secondFarSideAverage;
