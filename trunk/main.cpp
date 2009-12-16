@@ -66,7 +66,7 @@ public:
 			x = (float)rand()/(float)RAND_MAX*grd.x;
 			y = (float)rand()/(float)RAND_MAX*grd.y;
 			z = (float)rand()/(float)RAND_MAX*grd.z;
-			cout << i << ": " << vec3(x, y, z) << endl;
+//			cout << i << ": " << vec3(x, y, z) << endl;
 			particles.push_back(vec3(x, y, z));
 		}
 	}
@@ -344,11 +344,11 @@ void initScene() {
 	// generate particles
 	viewport.clearParticles();
 	// generate random particles
-//	viewport.generateParticles();
+	viewport.generateParticles();
 	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
-	viewport.setNumParticles(2);
-	viewport.addParticle(vec3(0.5, 0.5, 0.5));
-	viewport.addParticle(vec3(0.2, 0.2, 0.2));
+//	viewport.setNumParticles(2);
+//	viewport.addParticle(vec3(0.5, 0.5, 0.5));
+//	viewport.addParticle(vec3(0.2, 0.2, 0.2));
 
 	myReshape(viewport.w, viewport.h);
 }
@@ -508,7 +508,7 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	//advection();
+	advection();
 	viewport.update();
 
 	// start drawing here
@@ -618,7 +618,7 @@ void myFrameMove() {
 }
 
 int main(int argc, char *argv[]) {
-//	viewport.setNumParticles(atoi(argv[1]));
+	viewport.setNumParticles(atoi(argv[1]));
 
 	//initialize glut
 	glutInit(&argc, argv);
