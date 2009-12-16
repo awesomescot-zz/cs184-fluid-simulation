@@ -332,9 +332,9 @@ void initScene() {
 	grd.cubeGrid[1][1][1].v = .25;
 	grd.cubeGrid[1][2][1].w = .25;
 
-	viewport.tx = -.85*grd.x;
-	viewport.ty = -grd.y/5;
-	viewport.tz = -2;
+	viewport.tx = -.55*grd.x;
+	viewport.ty = -grd.y/2;
+	viewport.tz = -1.1;
 	viewport.rotx = -30;
 	viewport.roty = 61;
 	viewport.rotz = 0;
@@ -503,12 +503,16 @@ void myDisplay() {
 	gluLookAt(0, 0, -1, 0, 0, 0, 0, 1, 0);
 
 	glTranslatef(viewport.tx, viewport.ty, -viewport.tz);
+
+	glTranslatef(grd.x/2, grd.y/2, grd.z/2);
 	glRotatef(viewport.rotx, 1, 0, 0);
 	glRotatef(viewport.roty, 0, 1, 0);
+	glTranslatef(-grd.x/2, -grd.y/2, -grd.z/2);
+
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	advection();
+	//advection();
 	viewport.update();
 
 	// start drawing here
