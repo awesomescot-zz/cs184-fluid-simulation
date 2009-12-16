@@ -91,7 +91,28 @@ vec3 grid::getVelosity(vec3 location){
 	int gridSpotx = location[0] / xCubeSize;
 	int gridSpoty = location[1] / yCubeSize;
 	int gridSpotz = location[2] / zCubeSize;
-	float secondRightSideAverage, secondLeftSideAverage, secondTopSideAverage, secondBottomSideAverage, secondCloseSideAverage, secondFarSideAverage, fullFarSideAverage, firstCloseSideAverage, firstFarSideAverage, fullCloseSideAverage, firstRightSideAverage, firstLeftSideAverage, firstBottomSideAverage, firstTopSideAverage, fullRightSideAverage, fullLeftSideAverage, fullTopSideAverage, fullBottomSideAverage, ufullAverage, vfullAverage, wfullAverage;
+	// float secondRightSideAverage, secondLeftSideAverage, secondTopSideAverage, secondBottomSideAverage, secondCloseSideAverage, secondFarSideAverage, fullFarSideAverage, firstCloseSideAverage, firstFarSideAverage, fullCloseSideAverage, firstRightSideAverage, firstLeftSideAverage, firstBottomSideAverage, firstTopSideAverage, fullRightSideAverage, fullLeftSideAverage, fullTopSideAverage, fullBottomSideAverage, ufullAverage, vfullAverage, wfullAverage;
+	float secondRightSideAverage = 0;
+	float secondLeftSideAverage = 0;
+	float secondTopSideAverage = 0;
+	float secondBottomSideAverage = 0;
+	float secondCloseSideAverage = 0;
+	float secondFarSideAverage = 0;
+	float fullFarSideAverage = 0;
+	float firstCloseSideAverage = 0;
+	float firstFarSideAverage = 0;
+	float fullCloseSideAverage = 0;
+	float firstRightSideAverage = 0;
+	float firstLeftSideAverage = 0;
+	float firstBottomSideAverage = 0;
+	float firstTopSideAverage = 0;
+	float fullRightSideAverage = 0;
+	float fullLeftSideAverage = 0;
+	float fullTopSideAverage = 0;
+	float fullBottomSideAverage = 0;
+	float ufullAverage = 0;
+	float vfullAverage = 0;
+	float wfullAverage = 0;
 
 	//W
 	float zdistBack = location[2] - (gridSpotz*zCubeSize);

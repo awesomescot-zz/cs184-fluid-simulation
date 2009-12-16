@@ -463,7 +463,7 @@ void processInputKeys(int key, int x, int y) {
 	switch(key) {
 		case GLUT_KEY_LEFT :
 			if (drawLine)
-				uPos -= .1;
+				uPos += .1;
 			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.roty = viewport.roty + 1;
 			else
@@ -471,7 +471,7 @@ void processInputKeys(int key, int x, int y) {
 			break;
 		case GLUT_KEY_RIGHT :
 			if (drawLine)
-				uPos += .1;
+				uPos -= .1;
 			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.roty = viewport.roty - 1;
 			else
@@ -529,7 +529,7 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	//advection();
+	// advection();
 	viewport.update();
 
 	// start drawing here
