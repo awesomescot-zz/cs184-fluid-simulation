@@ -149,7 +149,7 @@ void showVelocities() {
 				numVelVerts++;
 
 				//draw the line:
-				glColor3f(1.0f, 1.0f, 1.0f);
+				glColor3f(0.0f, 1.0f, 0.0f);
 				glBegin(GL_LINES);
 					glVertex3f(velVerts[numVelVerts-2].x, velVerts[numVelVerts-2].y, velVerts[numVelVerts-2].z);
 					glVertex3f(velVerts[numVelVerts-1].x, velVerts[numVelVerts-1].y, velVerts[numVelVerts-1].z);
@@ -157,6 +157,19 @@ void showVelocities() {
 			}
 		}
 	}
+}
+
+void applyVelocity(vec3 p1, vec3 p2) {
+	// example: newGrid.cubeGrid[xi][yi][zi].u = vel[0];
+
+	// figure out the cube in which we start
+	int xi = p1[0] / grd.xCubeSize;
+	int yi = p1[1] / grd.yCubeSize;
+	int zi = p1[2] / grd.zCubeSize;
+	// set the velocity components
+	grd.cubeGrid[xi][yi][zi].u = (p2 - p1)[0];
+	grd.cubeGrid[xi][yi][zi].v = (p2 - p1)[1];
+	grd.cubeGrid[xi][yi][zi].w = (p2 - p1)[2];
 }
 
 void advection() {
@@ -355,6 +368,10 @@ void initScene() {
 
 void initLights() {
 	glEnable(GL_LIGHTING);
+	// these two lines needed for glColor3f to work with GL_LIGHTING
+	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+	glEnable ( GL_COLOR_MATERIAL );
+
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	GLfloat global_ambient[] = { 0.1f, 0.1f, 0.1f, 0.1f};
@@ -424,10 +441,10 @@ void processNormalKeys(unsigned char key, int x, int y) {
 					firstDot = false;
 				} else { // secondDot
 					// TODO
-					// cube c = grd.getCube(vec3(uPos, vPos, wPos);
-					// applyVelocity(cube);
+					applyVelocity(vec3(uFirst, vFirst, wFirst), vec3(uPos, vPos, wPos));
 					firstDot = true;
 					drawLine = false;
+					// reset the points
 					uPos = 0;
 					vPos = 0;
 					wPos = 0;
@@ -516,11 +533,11 @@ void myDisplay() {
 	viewport.update();
 
 	// start drawing here
-	glColor3f(1.0f, 1.0f, 1.0f);
 
 	if (viewport.g) {
 		//draw grid
 		//z-axis aligned
+		glColor3f(1.0f, 1.0f, 1.0f);
 		glBegin(GL_LINES);
 		float xs = (float)grd.x/grd.xSplit;
 		float ys = (float)grd.y/grd.ySplit;
@@ -583,7 +600,8 @@ void myDisplay() {
 	if (viewport.v)
 		showVelocities();
 
-	glEnable(GL_LIGHTING);
+	// glEnable(GL_LIGHTING);
+	glColor3f(0.0f, 0.0f, 1.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// draw particles
@@ -646,8 +664,8 @@ int main(int argc, char *argv[]) {
 	//keyboard interaction
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processInputKeys);
-	glutMouseFunc(dragMouse);
-	glutMotionFunc(moveMouse);
+	// glutMouseFunc(dragMouse);
+	// glutMotionFunc(moveMouse);
 
 	glutDisplayFunc(myDisplay);
 	glutReshapeFunc(myReshape);
