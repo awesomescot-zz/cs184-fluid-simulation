@@ -29,6 +29,14 @@ float xPos, yPos, zPos;
 struct verts{float x, y, z;} verts[MAX_VERTS], velVerts[MAX_VERTS];
 int numVerts = 0;
 
+// keyboard stuff
+float uPos = 0;
+float vPos = 0;
+float wPos = 0;
+float uFirst, vFirst, wFirst;
+bool drawLine = false;
+bool firstDot = true;
+
 int numVelVerts = 0;
 
 int WindowHeight, WindowWidth;
@@ -133,7 +141,7 @@ void showVelocities() {
 				velVerts[numVelVerts].y = point[1];
 				velVerts[numVelVerts].z = point[2];
 				numVelVerts++;
-				vel = grd.getVelosity(point).normalize(); // normalize for now to keep it simple
+				vel = grd.getVelosity(point);
 				point += vel;
 				velVerts[numVelVerts].x = point[0];
 				velVerts[numVelVerts].y = point[1];
@@ -400,6 +408,35 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		case 'v' :
 			viewport.v = !viewport.v;
 			break;
+		case 'l' :
+			if (!drawLine)
+				drawLine = true;
+			break;
+		case 13 : // enter
+			if (drawLine) {
+				if (firstDot) {
+					uFirst = uPos;
+					vFirst = vPos;
+					wFirst = wPos;
+					uPos = 0;
+					vPos = 0;
+					wPos = 0;
+					firstDot = false;
+				} else { // secondDot
+					// TODO
+					// cube c = grd.getCube(vec3(uPos, vPos, wPos);
+					// applyVelocity(cube);
+					firstDot = true;
+					drawLine = false;
+					uPos = 0;
+					vPos = 0;
+					wPos = 0;
+					uFirst = uPos;
+					vFirst = vPos;
+					wFirst = wPos;
+				}
+			}
+			break;
 	}
 }
 
@@ -408,19 +445,28 @@ void processInputKeys(int key, int x, int y) {
 	int mod = glutGetModifiers();
 	switch(key) {
 		case GLUT_KEY_LEFT :
-			if (mod == GLUT_ACTIVE_ALT)
+			if (drawLine)
+				uPos -= .1;
+			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.roty = viewport.roty + 1;
 			else
 				viewport.tx = viewport.tx - .1;
 			break;
 		case GLUT_KEY_RIGHT :
-			if (mod == GLUT_ACTIVE_ALT)
+			if (drawLine)
+				uPos += .1;
+			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.roty = viewport.roty - 1;
 			else
 				viewport.tx = viewport.tx + .1;
 			break;
 		case GLUT_KEY_UP :
-			if (mod == GLUT_ACTIVE_SHIFT)
+			if (drawLine) {
+				if (mod == GLUT_ACTIVE_SHIFT)
+					wPos += .1;
+				else
+					vPos += .1;
+			} else if (mod == GLUT_ACTIVE_SHIFT)
 				viewport.tz = viewport.tz + .1;
 			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.rotx = viewport.rotx - 1;
@@ -428,17 +474,25 @@ void processInputKeys(int key, int x, int y) {
 				viewport.ty = viewport.ty - .1;
 			break;
 		case GLUT_KEY_DOWN :
-			if (mod == GLUT_ACTIVE_SHIFT)
+			if (drawLine) {
+				if (mod == GLUT_ACTIVE_SHIFT)
+					wPos -= .1;
+				else
+					vPos -= .1;
+			} else if (mod == GLUT_ACTIVE_SHIFT)
 				viewport.tz = viewport.tz - .1;
 			else if (mod == GLUT_ACTIVE_ALT)
 				viewport.rotx = viewport.rotx + 1;
 			else
 				viewport.ty = viewport.ty + .1;
 			break;
+		
 	}
 }
 
 void myDisplay() {
+
+	glPointSize(5.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -498,6 +552,28 @@ void myDisplay() {
 
 		glEnd();
 	}
+
+	// drawing the line with keyboard
+	if (drawLine) {
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glBegin(GL_POINTS);
+		glVertex3f(uPos, vPos, wPos);
+		if (!firstDot)
+			glVertex3f(uFirst, vFirst, wFirst);
+		glEnd();
+		if (!firstDot) {
+			glBegin(GL_LINES);
+			glVertex3f(uPos, vPos, wPos);
+			glVertex3f(uFirst, vFirst, wFirst);
+			glEnd();
+		}
+	}
+	/*
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glBegin(GL_POINTS);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glEnd();
+	*/
 
 	//show velocities
 	if (viewport.v)
