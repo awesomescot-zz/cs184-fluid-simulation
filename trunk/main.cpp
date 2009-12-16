@@ -33,7 +33,7 @@ int numVelVerts = 0;
 
 int WindowHeight, WindowWidth;
 
-float deltaT = 1;
+float deltaT = (float)1/30;
 
 using namespace std;
 
@@ -43,6 +43,7 @@ grid grd;
 
 class Viewport {
 private:
+	int particleCount;
 	vector<vec3> particles;
 
 public:
@@ -50,6 +51,17 @@ public:
 	float tx, ty, tz;
 	int rotx, roty, rotz;
 	bool g, v;
+
+	void generateParticles() {
+		float x, y, z;
+		for (int i = 0; i < particleCount; i++) {
+			x = (float)rand()/(float)RAND_MAX*grd.x;
+			y = (float)rand()/(float)RAND_MAX*grd.y;
+			z = (float)rand()/(float)RAND_MAX*grd.z;
+			cout << i << ": " << vec3(x, y, z) << endl;
+			particles.push_back(vec3(x, y, z));
+		}
+	}
 
 	void addParticle(vec3 loc) {
 		particles.push_back(loc);
@@ -60,7 +72,11 @@ public:
 	}
 
 	int numParticles() {
-		return particles.size();
+		return particleCount;
+	}
+
+	void setNumParticles(int p) {
+		particleCount = p;
 	}
 
 	void update() {
@@ -317,9 +333,12 @@ void initScene() {
 	viewport.g = true;
 	viewport.v = false;
 
-	// 5 random particles
-	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
+	// generate particles
 	viewport.clearParticles();
+	// generate random particles
+//	viewport.generateParticles();
+	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
+	viewport.setNumParticles(2);
 	viewport.addParticle(vec3(0.5, 0.5, 0.5));
 	viewport.addParticle(vec3(0.2, 0.2, 0.2));
 
@@ -523,6 +542,8 @@ void myFrameMove() {
 }
 
 int main(int argc, char *argv[]) {
+//	viewport.setNumParticles(atoi(argv[1]));
+
 	//initialize glut
 	glutInit(&argc, argv);
 
