@@ -492,10 +492,7 @@ void initScene() {
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	grd = grid(1, 1, 1, 5, 5, 5);
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
-	grd.cubeGrid[1][2][1].w = .25;
+	grd = grid(1, 1, 1, 7, 7, 7);
 
 	viewport.tx = -.55*grd.x;
 	viewport.ty = -grd.y/2;
@@ -703,9 +700,12 @@ void myDisplay() {
 		if(doStuff1){
 			grd.cubeGrid[3][3][3].u = .2;
 			grd.cubeGrid[3][3][4].u = .2;
+			grd.cubeGrid[3][4][3].u = .15;
 		}
 		if(doStuff2){
 			grd.cubeGrid[3][1][1].v = .25;
+			grd.cubeGrid[3][1][2].v = .2;
+			grd.cubeGrid[2][1][1].v = .2;
 		}
 		if(doStuff3){
 			grd.cubeGrid[2][1][4].w = -.25;
@@ -721,9 +721,12 @@ void myDisplay() {
 		if(doStuff1){
 			grd.cubeGrid[3][3][3].u = .2;
 			grd.cubeGrid[3][3][4].u = .2;
+			grd.cubeGrid[3][4][3].u = .15;
 		}
 		if(doStuff2){
 			grd.cubeGrid[3][1][1].v = .25;
+			grd.cubeGrid[3][1][2].v = .2;
+			grd.cubeGrid[2][1][1].v = .2;
 		}
 		if(doStuff3){
 			grd.cubeGrid[2][1][4].w = -.25;
