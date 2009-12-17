@@ -561,10 +561,10 @@ void initScene() {
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	grd = grid(10, 10, 10, 5, 5, 5);
-	grd.cubeGrid[1][1][1].u = 5;
-	grd.cubeGrid[1][1][1].v = 5;
-	grd.cubeGrid[1][2][1].w = 5;
+	grd = grid(1, 1, 1, 5, 5, 5);
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
+	grd.cubeGrid[1][2][1].w = .25;
 
 	viewport.tx = -.55*grd.x;
 	viewport.ty = -grd.y/2;
