@@ -173,7 +173,7 @@ void applyVelocity(vec3 p1, vec3 p2) {
 	grd.cubeGrid[xi][yi][zi].v = (p2 - p1)[1];
 	grd.cubeGrid[xi][yi][zi].w = (p2 - p1)[2];
 }
-
+/*
 void smoothing() {
   int done = 0;
 
@@ -390,8 +390,214 @@ void smoothing() {
   }
 
   
-}
+}*/
 
+void smoothing() {
+  //printf ("start all");
+  int done = 0;
+
+  //grid newGrid = grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
+
+  int gx = grd.xSplit;
+  int gy = grd.ySplit;
+  int gz = grd.zSplit;
+  float*** potential;
+  potential = new float** [gx];
+  for (int i = 0; i < gx; i++) {
+    potential[i] = new float* [gy];
+    for (int j = 0; j < gy; j++) {
+      potential[i][j] = new float[gz];
+    }
+  }
+
+  //this assumes that the cells will always be cubes
+  float deltaTao = grd.xCubeSize;
+
+  float epsilon = 0.001;
+
+  int*** exitCheck;
+  exitCheck = new int** [gx];
+  for (int i = 0; i < gx; i++) {
+    exitCheck[i] = new int* [gy];
+    for (int j = 0; j < gy; j++) {
+      exitCheck[i][j] = new int[gz];
+    }
+  }
+
+  int terminate = 0;
+
+  for (int ei = 0; ei<grd.xSplit; ei++) {
+    for (int ej = 0; ej<grd.ySplit; ej++) {
+      for (int ek = 0; ek<grd.zSplit; ek++ ) {
+        exitCheck[ei][ej][ek] = 0;
+      }
+    }
+  }
+
+
+  while (terminate != 1) {
+    //printf ("start while");
+    for (int ei = 0; ei<grd.xSplit; ei++) {
+      for (int ej = 0; ej<grd.ySplit; ej++) {
+        for (int ek = 0; ek<grd.zSplit; ek++ ) {
+          exitCheck[ei][ej][ek] = 0;
+        }
+      }
+    }
+
+    for (int xi = 0 ; xi < grd.xSplit ; xi++) {
+      //int prevX = xi - 1;
+      int nextX = xi + 1;
+      for (int yi = 0; yi < grd.ySplit; yi++) {
+        //int prevY = yi - 1;
+        int nextY = yi + 1;
+        for (int zi = 0; zi < grd.zSplit; zi++) {
+          //int prevZ = zi - 1;
+          int nextZ = zi + 1;
+
+          //float prevPX = 0.0;
+          //if (prevX >= 0) {
+          //  prevPX = potential[xi-1][yi][zi];
+          //}
+
+          float nextPX = 0.0;
+          if (nextX < grd.xSplit) {
+            nextPX = potential [xi+1][yi][zi];
+          }
+
+          //float prevPY = 0.0;
+          //if (prevY >= 0) {
+          //  prevPY = potential[xi][yi-1][zi];
+          //}
+
+          float nextPY = 0.0;
+          if (nextY < grd.ySplit) {
+            nextPY = potential [xi][yi+1][zi];
+          }
+
+          //float prevPZ = 0.0;
+          //if (prevZ >= 0) {
+          //  prevPZ = potential[xi][yi][zi-1];
+          //}
+
+          float nextPZ = 0.0;
+          if (nextZ < grd.zSplit) {
+            nextPZ = potential [xi][yi][zi+1];
+          }
+
+
+          float uXAdd = 0;
+          if (nextX < grd.xSplit) {
+            uXAdd = grd.cubeGrid[xi+1][yi][zi].u;
+          }
+
+
+          float uYAdd = 0;
+          if (nextY < grd.ySplit) {
+            uYAdd = grd.cubeGrid[xi][yi+1][zi].v;
+          }
+
+          float uZAdd = 0;
+          if (nextZ < grd.zSplit) {
+            uZAdd = grd.cubeGrid[xi][yi][zi+1].w;
+          }
+
+          float uPart = uXAdd - (grd.cubeGrid[xi][yi][zi]).u;
+
+          float vPart = uYAdd - (grd.cubeGrid[xi][yi][zi]).v;
+
+          float zPart = uZAdd - (grd.cubeGrid[xi][yi][zi]).w;
+
+          float deltaDotU = (1/deltaTao) * (uPart + vPart + zPart);
+
+
+          //float deltaDotU = (1/deltaTao)*((uXAdd - (grd.cubeGrid([xi][yi][zi])).u) + (uYAdd - (grd.cubeGrid[xi][yi][zi]).v) + (uZAdd - (grd.cubeGrid[xi][yi][zi]).w));
+
+          float oldPotential = potential [xi][yi][zi];
+
+          potential[xi][yi][zi] = ((2/(8/(deltaTao*deltaTao)))*(-deltaDotU + (1/(deltaTao*deltaTao))* (nextPX + potential[xi][yi][zi] + nextPY + potential[xi][yi][zi] + nextPZ + potential[xi][yi][zi]))) - potential[xi][yi][zi];
+
+          float numerator = fabs(potential[xi][yi][zi]) - fabs(oldPotential);
+
+          float denominator = fabs(potential[xi][yi][zi]) + fabs(oldPotential);
+          float numDiv = 0;
+
+          if (denominator == 0) {
+            if (numerator == 0) {
+              numDiv = 0;
+            }
+            else {
+              numDiv = 0.000001;
+            }
+          }
+          else {
+            numDiv = numerator / denominator;
+          }
+
+//               printf ("numDiv %f\n", numDiv);
+
+
+          float epsilonCheck = fabs(numDiv);
+
+          if (epsilonCheck >= epsilon) {
+            exitCheck[xi][yi][zi] = 1;
+          }
+
+        }
+      }
+    }
+
+    int done = 1;
+
+    for (int ei = 0; ei<grd.xSplit; ei++) {
+      for (int ej = 0; ej<grd.ySplit; ej++) {
+        for (int ek = 0; ek<grd.zSplit; ek++ ) {
+          if (exitCheck[ei][ej][ek] == 0) {
+            done = 0;
+          }
+          else {
+            done = 1;
+          }
+          if (done == 1) {
+            break;
+          }
+        }
+        if (done == 1) {
+          break;
+        }
+      }
+      if (done == 1) {
+        break;
+      }
+    }
+
+    if (done == 1) {
+      terminate = 0;
+    }
+    if (done == 0) {
+      terminate = 1;
+    }
+  }
+
+  for (int xi = 1; xi < grd.xSplit; xi++) {
+    int nextX = xi + 1;
+    for (int yi = 1; yi< grd.ySplit; yi++) {
+      int nextY = yi + 1;
+      for (int zi = 1; zi < grd.ySplit; zi++) {
+
+
+        grd.cubeGrid[xi][yi][zi].u = grd.cubeGrid[xi][yi][zi].u - (potential[xi][yi][zi]-potential[xi-1][yi][zi]);
+        grd.cubeGrid[xi][yi][zi].v = grd.cubeGrid[xi][yi][zi].v - (potential[xi][yi][zi]-potential[xi][yi-1][zi]);
+        grd.cubeGrid[xi][yi][zi].w = grd.cubeGrid[xi][yi][zi].w - (potential[xi][yi][zi]-potential[xi][yi][zi-1]);
+
+   //     printf ("new velocities: %f, %f, %f\n", grd.cubeGrid[xi][yi][zi].u, grd.cubeGrid[xi][yi][zi].v, grd.cubeGrid[xi][yi][zi].w);
+
+      }
+    }
+  }
+//  printf ("done");
+
+}
 
 void advection() {
 	/*
@@ -758,8 +964,14 @@ void myDisplay() {
 	// before drawing, update new particle locations
 	if(step == true){
 		advection();
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
 		smoothing();
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
 		viewport.update();
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
 
 		// start drawing here
 		step = false;
