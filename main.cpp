@@ -37,7 +37,7 @@ float uFirst, vFirst, wFirst;
 bool drawLine = false;
 bool firstDot = true;
 
-bool pause = false;
+bool Pause = false;
 
 int numVelVerts = 0;
 
@@ -224,7 +224,10 @@ void smoothing() {
 	int iter = 0;
 	while (done == 1) {
 		//cout << iter++ << " iterations" << endl;
-		if(iter++> 100) break;
+		if(iter++> 100){
+			cout << "breaking" << endl;
+			break;
+		}
 		for (int ei = 0; ei<grd.xSplit; ei++) {
 			for (int ej = 0; ej<grd.ySplit; ej++) {
 				for (int ek = 0; ek<grd.zSplit; ek++ ) {
@@ -277,9 +280,9 @@ void smoothing() {
 					float denominator = fabs(newpotential[xi][yi][zi]) + fabs(potential[xi][yi][zi]);
 					float numDiv = 0;
 					if(denominator == 0){
-						float numDiv  = numerator;
+						float numDiv  = fabs(numerator);
 					}else{
-						float numDiv = numerator/denominator;
+						float numDiv = fabs(numerator/denominator);
 					}
 					float epsilonCheck = fabs(numDiv);
 
@@ -577,7 +580,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
 				drawLine = true;
 			break;
 		case 'p' :
-			pause = !pause;
+			Pause = !Pause;
 			break;
 		case '+' :
 			viewport.particleSize += 0.01;
@@ -686,7 +689,7 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	if(pause == false){
+	if(Pause == false){
 		//cout << o << " steps" << endl;
 		o++;
 		grd.cubeGrid[3][3][3].u = .2;
