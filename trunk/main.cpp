@@ -676,14 +676,6 @@ void myDisplay() {
 	grd.cubeGrid[1][1][1].u = .5;
 	grd.cubeGrid[1][1][1].v = .25;
 		smoothing();
-<<<<<<< .mine
-		grd.cubeGrid[1][1][1].u = .5;
-		grd.cubeGrid[1][1][1].v = .25;
-		grd.cubeGrid[1][2][1].w = .25;
-=======
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
->>>>>>> .r63
 		viewport.update();
 	grd.cubeGrid[1][1][1].u = .5;
 	grd.cubeGrid[1][1][1].v = .25;
