@@ -242,8 +242,6 @@ vec3 grid::getVelosity(vec3 location){
 	 *  -------
 	 */
 	//U
-	printf("gridSpot = %d, %d, %d", gridSpotx, gridSpoty, gridSpotz);
-	cout << location << endl;
 	float xdistBack = location[0] - (gridSpotx*xCubeSize);
 	float xdistForward = (gridSpotx+1)*xCubeSize - location[0];
 	if( (gridSpotz*zCubeSize) + .5*zCubeSize < location[2]){//if the point is over half way through the cube in the z direction
