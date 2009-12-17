@@ -120,7 +120,7 @@ void showVelocities() {
 	 * Q: don't we have to clear the velocities and redo at each time step?
 	 */
 	// TODO: button to toggle velocity vectors
-	
+
 	vec3 vel, point;
 
 	// first, clear it from before
@@ -133,7 +133,7 @@ void showVelocities() {
 		}
 		numVelVerts = 0;
 	}
-	
+
 	// center of cube = cube index * cube length + 1/2 cube length
 	for (int xi = 0; xi < grd.xSplit; xi++) {
 		for (int yi = 0; yi < grd.ySplit; yi++) {
@@ -508,7 +508,7 @@ void processInputKeys(int key, int x, int y) {
 			else
 				viewport.ty = viewport.ty + .1;
 			break;
-		
+
 	}
 }
 
@@ -534,11 +534,14 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	// advection();
-	viewport.update();
+	if(step == true){
+		// advection();
 
-	// start drawing here
+		viewport.update();
 
+		// start drawing here
+		step = false;
+	}
 	if (viewport.g) {
 		//draw grid
 		//z-axis aligned
