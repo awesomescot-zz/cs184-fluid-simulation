@@ -174,20 +174,37 @@ void applyVelocity(vec3 p1, vec3 p2) {
 	grd.cubeGrid[xi][yi][zi].w = (p2 - p1)[2];
 }
 
-/*
 void smoothing() {
   int done = 0;
 
   grid newGrid = grid(grd.x, grd.y, grd.z, grd.xSplit, grd.ySplit, grd.zSplit);
 
-  float potential[grd.xSplit][grd.ySplit][grd.zSplit];
+  int gx = grd.xSplit;
+  int gy = grd.ySplit;
+  int gz = grd.zSplit;
+  float*** potential;
+  potential = new float** [gx];
+  for (int i = 0; i < gx; i++) {
+	  potential[i] = new float* [gy];
+	  for (int j = 0; j < gy; j++) {
+		  potential[i][j] = new float[gz];
+	  }
+  }
 
   //this assumes that the cells will always be cubes
   float deltaTao = grd.xCubeSize;
   
   float epsilon = 0.001;
-  
-  int exitCheck[grd.xSplit][grd.ySplit][grd.zSplit];
+
+  int*** exitCheck;
+  exitCheck = new int** [gx];
+  for (int i = 0; i < gx; i++) {
+	  exitCheck[i] = new int* [gy];
+	  for (int j = 0; j < gy; j++) {
+		  exitCheck[i][j] = new int[gz];
+	  }
+  }
+
   int terminate = 0;
 
   for (int ei = 0; ei<grd.xSplit; ei++) {
@@ -374,7 +391,7 @@ void smoothing() {
 
   
 }
-*/
+
 
 void advection() {
 	/*
@@ -738,7 +755,7 @@ void myDisplay() {
 	// before drawing, update new particle locations
 	if(step == true){
 		advection();
-
+		//smoothing();
 		viewport.update();
 
 		// start drawing here
