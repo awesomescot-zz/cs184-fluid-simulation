@@ -561,29 +561,25 @@ void initScene() {
 	glEnable(GL_DEPTH_TEST);
 
 	// create grid
-	grd = grid(1, 1, 1, 5, 5, 5);
-	grd.cubeGrid[1][1][1].u = 1;
-	grd.cubeGrid[1][1][1].v = 1;
-	grd.cubeGrid[1][2][1].w = 1;
+	grd = grid(10, 10, 10, 5, 5, 5);
+	grd.cubeGrid[1][1][1].u = 5;
+	grd.cubeGrid[1][1][1].v = 5;
+	grd.cubeGrid[1][2][1].w = 5;
 
 	viewport.tx = -.55*grd.x;
 	viewport.ty = -grd.y/2;
-	viewport.tz = -1.1;
+	viewport.tz = -1.1*grd.z;
 	viewport.rotx = -30;
 	viewport.roty = 61;
 	viewport.rotz = 0;
 	viewport.g = true;
 	viewport.v = false;
-	viewport.particleSize = 0.05;
+	viewport.particleSize = grd.x*0.05;
 
 	// generate particles
 	viewport.clearParticles();
-	// generate random particles
 	viewport.generateParticles();
-	// keep this within the grid from (0, 0, 0) to (-1, 1, 1) for now
-//	viewport.setNumParticles(2);
-//	viewport.addParticle(vec3(0.5, 0.5, 0.5));
-//	viewport.addParticle(vec3(0.2, 0.2, 0.2));
+
 
 	myReshape(viewport.w, viewport.h);
 }
