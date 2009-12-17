@@ -37,6 +37,8 @@ float uFirst, vFirst, wFirst;
 bool drawLine = false;
 bool firstDot = true;
 
+bool step = false;
+
 int numVelVerts = 0;
 
 int WindowHeight, WindowWidth;
@@ -428,6 +430,9 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		case 'l' :
 			if (!drawLine)
 				drawLine = true;
+			break;
+		case 's' :
+			step = true;
 			break;
 		case 13 : // enter
 			if (drawLine) {
