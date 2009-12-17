@@ -73,6 +73,16 @@ cube grid::getCube(int a, int b, int c){
 	return cubeGrid[a][b][c];
 }
 
+void grid::print(){
+	for(int i=0; i<xSplit; i++){
+		for(int j=0; j<ySplit; j++){
+			for(int k=0; k<zSplit; k++){
+				printf("cubeGrid[%d][%d][%d]   U = %f,  V = %f,  W = %f\n", i,j,k,cubeGrid[i][j][k].u,cubeGrid[i][j][k].v,cubeGrid[i][j][k].w);
+			}
+		}
+	}
+}
+
 cube grid::getCube(vec3 location){
 	int gridSpotx = location[0] / xCubeSize;
 	int gridSpoty = location[1] / yCubeSize;
