@@ -143,6 +143,11 @@ void showVelocities() {
 				velVerts[numVelVerts].y = point[1];
 				velVerts[numVelVerts].z = point[2];
 				numVelVerts++;
+				glColor3f(1.0f, 0.0f, 1.0f);
+				glPointSize(1.0f);
+				glBegin(GL_POINTS);
+				glVertex3f(point[0], point[1], point[2]);
+				glEnd();
 				vel = grd.getVelosity(point);
 				point += vel;
 				velVerts[numVelVerts].x = point[0];
@@ -648,7 +653,7 @@ void processInputKeys(int key, int x, int y) {
 
 	}
 }
-
+int o = 1;
 void myDisplay() {
 
 	glPointSize(5.0f);
@@ -672,10 +677,16 @@ void myDisplay() {
 
 	// before drawing, update new particle locations
 	if(step == true){
+cout << o << " steps" << endl;
+o++;
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
 		advection();
 	grd.cubeGrid[1][1][1].u = .5;
 	grd.cubeGrid[1][1][1].v = .25;
 		smoothing();
+	grd.cubeGrid[1][1][1].u = .5;
+	grd.cubeGrid[1][1][1].v = .25;
 		viewport.update();
 	grd.cubeGrid[1][1][1].u = .5;
 	grd.cubeGrid[1][1][1].v = .25;
