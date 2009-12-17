@@ -34,6 +34,7 @@ float uPos = 0;
 float vPos = 0;
 float wPos = 0;
 float uFirst, vFirst, wFirst;
+bool doStuff1 = false, doStuff2 = false, doStuff3=false;
 bool drawLine = false;
 bool firstDot = true;
 
@@ -288,8 +289,6 @@ void smoothing() {
 
 					if (epsilonCheck >= epsilon) {
 						exitCheck[xi][yi][zi] = 1;
-						//printf("num = %f,  de = %f", numerator, denominator);
-						//cout << newpotential[xi][yi][zi];
 					}else{
 						exitCheck[xi][yi][zi] = 0;
 					}
@@ -566,6 +565,15 @@ void processNormalKeys(unsigned char key, int x, int y) {
 	switch(key) {
 		case 27 :
 			exit(0);
+		case 'u' :
+			doStuff3 = !doStuff3;
+			break;
+		case 'i' :
+			doStuff2 = !doStuff2;
+			break;
+		case 'o' :
+			doStuff1 = !doStuff1;
+			break;
 		case 'r' :
 			initScene();
 			break;
@@ -692,8 +700,16 @@ void myDisplay() {
 	if(Pause == false){
 		//cout << o << " steps" << endl;
 		o++;
-		grd.cubeGrid[3][3][3].u = .2;
-		//grd.cubeGrid[1][1][1].v = .25;
+		if(doStuff1){
+			grd.cubeGrid[3][3][3].u = .2;
+			grd.cubeGrid[3][3][4].u = .2;
+		}
+		if(doStuff2){
+			grd.cubeGrid[3][1][1].v = .25;
+		}
+		if(doStuff3){
+			grd.cubeGrid[2][1][4].w = -.25;
+		}
 		for(int i =0; i<grd.xSplit; i++){
 			for(int j = 0; j<grd.ySplit; j++){
 				grd.cubeGrid[0][i][j].u=0;
@@ -702,8 +718,16 @@ void myDisplay() {
 			}
 		}
 		advection();
-		grd.cubeGrid[3][3][3].u = .2;
-		//grd.cubeGrid[1][1][1].v = .25;
+		if(doStuff1){
+			grd.cubeGrid[3][3][3].u = .2;
+			grd.cubeGrid[3][3][4].u = .2;
+		}
+		if(doStuff2){
+			grd.cubeGrid[3][1][1].v = .25;
+		}
+		if(doStuff3){
+			grd.cubeGrid[2][1][4].w = -.25;
+		}
 		for(int i =0; i<grd.xSplit; i++){
 			for(int j = 0; j<grd.ySplit; j++){
 				grd.cubeGrid[0][i][j].u=0;
