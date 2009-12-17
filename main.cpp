@@ -535,7 +535,7 @@ void myDisplay() {
 
 	// before drawing, update new particle locations
 	if(step == true){
-		// advection();
+		//advection();
 
 		viewport.update();
 
