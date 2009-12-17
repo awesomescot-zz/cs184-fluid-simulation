@@ -37,7 +37,7 @@ float uFirst, vFirst, wFirst;
 bool drawLine = false;
 bool firstDot = true;
 
-bool step = false;
+bool pause = false;
 
 int numVelVerts = 0;
 
@@ -275,7 +275,7 @@ void smoothing() {
 					//cout << newpotential[xi][yi][zi] << endl;
 					float numerator = fabs(newpotential[xi][yi][zi]) - fabs(potential[xi][yi][zi]);
 					float denominator = fabs(newpotential[xi][yi][zi]) + fabs(potential[xi][yi][zi]);
-					float numDiv;
+					float numDiv = 0;
 					if(denominator == 0){
 						float numDiv  = numerator;
 					}else{
@@ -576,8 +576,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
 			if (!drawLine)
 				drawLine = true;
 			break;
-		case 's' :
-			step = true;
+		case 'p' :
+			pause = !pause;
 			break;
 		case '+' :
 			viewport.particleSize += 0.01;
@@ -662,6 +662,7 @@ void processInputKeys(int key, int x, int y) {
 
 	}
 }
+
 int o = 1;
 void myDisplay() {
 
@@ -685,7 +686,7 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	//if(step == true){
+	if(pause == false){
 		//cout << o << " steps" << endl;
 		o++;
 		grd.cubeGrid[3][3][3].u = .2;
@@ -709,10 +710,7 @@ void myDisplay() {
 		}
 		smoothing();
 		viewport.update();
-
-		// start drawing here
-		step = false;
-	//}
+	}
 	if (viewport.g) {
 		//draw grid
 		//z-axis aligned
