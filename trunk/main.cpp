@@ -58,7 +58,7 @@ private:
 
 public:
 	int w, h;
-	float tx, ty, tz;
+	float tx, ty, tz, particleSize;
 	int rotx, roty, rotz;
 	bool g, v;
 
@@ -562,9 +562,9 @@ void initScene() {
 
 	// create grid
 	grd = grid(1, 1, 1, 5, 5, 5);
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
-	grd.cubeGrid[1][2][1].w = .25;
+	grd.cubeGrid[1][1][1].u = 1;
+	grd.cubeGrid[1][1][1].v = 1;
+	grd.cubeGrid[1][2][1].w = 1;
 
 	viewport.tx = -.55*grd.x;
 	viewport.ty = -grd.y/2;
@@ -574,6 +574,7 @@ void initScene() {
 	viewport.rotz = 0;
 	viewport.g = true;
 	viewport.v = false;
+	viewport.particleSize = 0.05;
 
 	// generate particles
 	viewport.clearParticles();
@@ -652,6 +653,12 @@ void processNormalKeys(unsigned char key, int x, int y) {
 			break;
 		case 's' :
 			step = true;
+			break;
+		case '+' :
+			viewport.particleSize += 0.01;
+			break;
+		case '-' :
+			viewport.particleSize -= 0.01;
 			break;
 		case 13 : // enter
 			if (drawLine) {
@@ -755,7 +762,7 @@ void myDisplay() {
 	// before drawing, update new particle locations
 	if(step == true){
 		advection();
-		//smoothing();
+		smoothing();
 		viewport.update();
 
 		// start drawing here
@@ -838,7 +845,7 @@ void myDisplay() {
 
 		glPushMatrix();
 			glTranslatef(part[0], part[1], part[2]);
-			glutSolidSphere(0.05, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
+			glutSolidSphere(viewport.particleSize, 50, 50);			// glutSolidSphere(radius, splice(long), splices(lat))
 		glPopMatrix();
 	}
 
