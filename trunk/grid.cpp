@@ -74,6 +74,7 @@ cube grid::getCube(int a, int b, int c){
 }
 
 void grid::print(){
+	printf("Print out of grid:\n");
 	for(int i=0; i<xSplit; i++){
 		for(int j=0; j<ySplit; j++){
 			for(int k=0; k<zSplit; k++){
