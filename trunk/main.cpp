@@ -221,7 +221,10 @@ void smoothing() {
 		}
 	}
 	int done = 1;
+	int iter = 0;
 	while (done == 1) {
+		//cout << iter++ << " iterations" << endl;
+		if(iter++> 100) break;
 		for (int ei = 0; ei<grd.xSplit; ei++) {
 			for (int ej = 0; ej<grd.ySplit; ej++) {
 				for (int ek = 0; ek<grd.zSplit; ek++ ) {
@@ -269,15 +272,21 @@ void smoothing() {
 					float deltaDotU = (1/deltaTao) * (uPart + vPart + zPart);
 
 					newpotential[xi][yi][zi] = ((2/(8/(deltaTao*deltaTao)))*(-deltaDotU + (1/(deltaTao*deltaTao))* (nextPX + potential[xi][yi][zi] + nextPY + potential[xi][yi][zi] + nextPZ + potential[xi][yi][zi]))) - potential[xi][yi][zi];
-
+					//cout << newpotential[xi][yi][zi] << endl;
 					float numerator = fabs(newpotential[xi][yi][zi]) - fabs(potential[xi][yi][zi]);
 					float denominator = fabs(newpotential[xi][yi][zi]) + fabs(potential[xi][yi][zi]);
-					float numDiv = numerator/denominator;
-
+					float numDiv;
+					if(denominator == 0){
+						float numDiv  = numerator;
+					}else{
+						float numDiv = numerator/denominator;
+					}
 					float epsilonCheck = fabs(numDiv);
 
 					if (epsilonCheck >= epsilon) {
 						exitCheck[xi][yi][zi] = 1;
+						//printf("num = %f,  de = %f", numerator, denominator);
+						//cout << newpotential[xi][yi][zi];
 					}else{
 						exitCheck[xi][yi][zi] = 0;
 					}
@@ -676,24 +685,34 @@ void myDisplay() {
 	glRotatef(viewport.rotz, 0, 0, 1);
 
 	// before drawing, update new particle locations
-	if(step == true){
-cout << o << " steps" << endl;
-o++;
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
+	//if(step == true){
+		//cout << o << " steps" << endl;
+		o++;
+		grd.cubeGrid[3][3][3].u = .2;
+		//grd.cubeGrid[1][1][1].v = .25;
+		for(int i =0; i<grd.xSplit; i++){
+			for(int j = 0; j<grd.ySplit; j++){
+				grd.cubeGrid[0][i][j].u=0;
+				grd.cubeGrid[i][0][j].v=0;
+				grd.cubeGrid[i][j][0].w=0;
+			}
+		}
 		advection();
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
+		grd.cubeGrid[3][3][3].u = .2;
+		//grd.cubeGrid[1][1][1].v = .25;
+		for(int i =0; i<grd.xSplit; i++){
+			for(int j = 0; j<grd.ySplit; j++){
+				grd.cubeGrid[0][i][j].u=0;
+				grd.cubeGrid[i][0][j].v=0;
+				grd.cubeGrid[i][j][0].w=0;
+			}
+		}
 		smoothing();
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
 		viewport.update();
-	grd.cubeGrid[1][1][1].u = .5;
-	grd.cubeGrid[1][1][1].v = .25;
 
 		// start drawing here
 		step = false;
-	}
+	//}
 	if (viewport.g) {
 		//draw grid
 		//z-axis aligned
