@@ -23,6 +23,7 @@ public:
 	cube getCube(int, int, int);
 	cube getCube(vec3);
 	vec3 getVelosity(vec3);
+	void print();
 };
 
 #endif
